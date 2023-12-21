@@ -14,6 +14,7 @@ import {
   ExcalidrawElement,
   ExcalidrawTextElement,
 } from "./element/types";
+import { orderByFractionalIndex } from "./fractionalIndex";
 import {
   AppState,
   ObservedAppState,
@@ -21,10 +22,19 @@ import {
   ObservedStandaloneAppState,
 } from "./types";
 import { Mutable, SubtypeOf } from "./utility-types";
-import { arrayToObject, assertNever, isShallowEqual } from "./utils";
+import {
+  arrayToMap,
+  arrayToObject,
+  assertNever,
+  isShallowEqual,
+} from "./utils";
 
 /**
- * Represents the difference between two `T` objects.
+ * Represents the difference between two objects of the same type.
+ *
+ * Both `from` and `to` partials represent the same set of added, removed or updated properties, where:
+ * - `from` is a set of all the previous (removed) values
+ * - `to` is a set of all the next (added, updated) values
  *
  * Keeping it as pure object (without transient state, side-effects, etc.), so we don't have to instantiate it on load.
  */
@@ -54,7 +64,7 @@ class Delta<T> {
    * @param prevObject - The previous state of the object.
    * @param nextObject - The next state of the object.
    *
-   * @returns new Delta instance.
+   * @returns new delta instance.
    */
   public static calculate<T extends { [key: string]: any }>(
     prevObject: T,
@@ -103,7 +113,7 @@ class Delta<T> {
   }
 
   /**
-   * Merges partials for nested objects.
+   * Merges partials nested objects.
    */
   public static merge<T extends { [key: string]: unknown }>(
     prev: T,
@@ -122,11 +132,16 @@ class Delta<T> {
   /**
    * Compares if object1 contains any different value compared to the object2.
    */
-  public static isLeftDifferent<T extends {}>(object1: T, object2: T): boolean {
+  public static isLeftDifferent<T extends {}>(
+    object1: T,
+    object2: T,
+    skipShallowCompare = false,
+  ): boolean {
     const anyDistinctKey = this.distinctKeysIterator(
       "left",
       object1,
       object2,
+      skipShallowCompare,
     ).next().value;
 
     return !!anyDistinctKey;
@@ -138,11 +153,13 @@ class Delta<T> {
   public static isRightDifferent<T extends {}>(
     object1: T,
     object2: T,
+    skipShallowCompare = false,
   ): boolean {
     const anyDistinctKey = this.distinctKeysIterator(
       "right",
       object1,
       object2,
+      skipShallowCompare,
     ).next().value;
 
     return !!anyDistinctKey;
@@ -151,27 +168,27 @@ class Delta<T> {
   /**
    * Returns all the object1 keys that have distinct values.
    */
-  public static getLeftDifferences<T extends {}>(object1: T, object2: T) {
-    const distinctKeys = new Set<string>();
-
-    for (const key of this.distinctKeysIterator("left", object1, object2)) {
-      distinctKeys.add(key);
-    }
-
-    return Array.from(distinctKeys);
+  public static getLeftDifferences<T extends {}>(
+    object1: T,
+    object2: T,
+    skipShallowCompare = false,
+  ) {
+    return Array.from(
+      this.distinctKeysIterator("left", object1, object2, skipShallowCompare),
+    );
   }
 
   /**
    * Returns all the object2 keys that have distinct values.
    */
-  public static getRightDifferences<T extends {}>(object1: T, object2: T) {
-    const distinctKeys = new Set<string>();
-
-    for (const key of this.distinctKeysIterator("right", object1, object2)) {
-      distinctKeys.add(key);
-    }
-
-    return Array.from(distinctKeys);
+  public static getRightDifferences<T extends {}>(
+    object1: T,
+    object2: T,
+    skipShallowCompare = false,
+  ) {
+    return Array.from(
+      this.distinctKeysIterator("right", object1, object2, skipShallowCompare),
+    );
   }
 
   /**
@@ -185,7 +202,12 @@ class Delta<T> {
     join: "left" | "right" | "full",
     object1: T,
     object2: T,
+    skipShallowCompare: boolean = false,
   ) {
+    if (object1 === object2) {
+      return [];
+    }
+
     let keys: string[] = [];
 
     if (join === "left") {
@@ -204,6 +226,7 @@ class Delta<T> {
 
       if (object1Value !== object2Value) {
         if (
+          !skipShallowCompare &&
           typeof object1Value === "object" &&
           typeof object2Value === "object" &&
           object1Value !== null &&
@@ -642,39 +665,32 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       }
 
       if (prevElement.versionNonce !== nextElement.versionNonce) {
+        const delta = Delta.calculate<ElementPartial>(
+          prevElement,
+          nextElement,
+          ElementsChange.stripIrrelevantProps,
+          ElementsChange.postProcess,
+        );
+
         if (
           // Making sure we don't get here some non-boolean values (i.e. undefined, null, etc.)
           typeof prevElement.isDeleted === "boolean" &&
           typeof nextElement.isDeleted === "boolean" &&
           prevElement.isDeleted !== nextElement.isDeleted
         ) {
-          const from = { ...prevElement };
-          const to = { ...nextElement };
-          const delta = Delta.calculate<ElementPartial>(
-            from,
-            to,
-            ElementsChange.stripIrrelevantProps,
-            ElementsChange.postProcess,
-          );
-
           // Notice that other props could have been updated as well
           if (prevElement.isDeleted && !nextElement.isDeleted) {
             added.set(nextElement.id, delta);
           } else {
             removed.set(nextElement.id, delta);
           }
-        } else {
-          const delta = Delta.calculate<ElementPartial>(
-            prevElement,
-            nextElement,
-            ElementsChange.stripIrrelevantProps,
-            ElementsChange.postProcess,
-          );
 
-          // Make sure there are at least some changes (except changes to irrelevant data)
-          if (!Delta.isEmpty(delta)) {
-            updated.set(nextElement.id, delta);
-          }
+          continue;
+        }
+
+        // Making sure there are at least some changes
+        if (!Delta.isEmpty(delta)) {
+          updated.set(nextElement.id, delta);
         }
       }
     }
@@ -785,8 +801,14 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
     elements: Map<string, ExcalidrawElement>,
     snapshot: ReadonlyMap<string, ExcalidrawElement>,
   ): [Map<string, ExcalidrawElement>, boolean] {
-    const visibleDifferenceFlag = { value: false };
-    const changed = new Map<string, ExcalidrawElement>();
+    const flags = {
+      containsVisibleDifference: false,
+      containsZindexDifference: false,
+    };
+
+    const applyDelta = ElementsChange.createApplier(elements, flags);
+
+    const changes = new Map<string, ExcalidrawElement>();
 
     function setElements(
       ...changedElements: (ExcalidrawElement | undefined)[]
@@ -794,7 +816,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       for (const element of changedElements) {
         if (element) {
           elements.set(element.id, element);
-          changed.set(element.id, element);
+          changes.set(element.id, element);
         }
       }
     }
@@ -803,12 +825,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       const existingElement = elements.get(id) ?? snapshot.get(id);
 
       if (existingElement) {
-        const removedElement = ElementsChange.applyDelta(
-          existingElement,
-          delta,
-          elements,
-          visibleDifferenceFlag,
-        );
+        const removedElement = applyDelta(existingElement, delta);
 
         setElements(
           removedElement,
@@ -827,12 +844,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       const existingElement = elements.get(id) ?? snapshot.get(id);
 
       if (existingElement) {
-        const updatedElement = ElementsChange.applyDelta(
-          existingElement,
-          delta,
-          elements,
-          visibleDifferenceFlag,
-        );
+        const updatedElement = applyDelta(existingElement, delta);
 
         setElements(updatedElement);
       }
@@ -843,12 +855,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       const existingElement = elements.get(id) ?? snapshot.get(id);
 
       if (existingElement) {
-        const addedElement = ElementsChange.applyDelta(
-          existingElement,
-          delta,
-          elements,
-          visibleDifferenceFlag,
-        );
+        const addedElement = applyDelta(existingElement, delta);
 
         setElements(
           addedElement,
@@ -864,110 +871,97 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       }
     }
 
-    ElementsChange.redrawTextBoundingBoxes(changed, elements);
+    ElementsChange.redrawTextBoundingBoxes(changes, elements);
+    const nextElements = ElementsChange.reorderElements(elements, flags);
 
-    return [elements, visibleDifferenceFlag.value];
+    return [nextElements, flags.containsVisibleDifference];
   }
 
-  private static applyDelta(
-    element: ExcalidrawElement,
-    delta: Delta<ElementPartial>,
-    elements: ReadonlyMap<string, ExcalidrawElement>,
-    visibleDifferenceFlag: { value: boolean },
-  ): ExcalidrawElement {
-    const { boundElements: removedBoundElements, groupIds: removedGroupIds } =
-      delta.from;
+  private static createApplier =
+    (
+      elements: ReadonlyMap<string, ExcalidrawElement>,
+      flags: {
+        containsVisibleDifference: boolean;
+        containsZindexDifference: boolean;
+      },
+    ) =>
+    (
+      element: ExcalidrawElement,
+      delta: Delta<ElementPartial>,
+    ): ExcalidrawElement => {
+      const { boundElements: removedBoundElements, groupIds: removedGroupIds } =
+        delta.from;
 
-    const {
-      boundElements: addedBoundElements,
-      groupIds: addedGroupIds,
-      ...directlyApplicablePartial
-    } = delta.to;
+      const {
+        boundElements: addedBoundElements,
+        groupIds: addedGroupIds,
+        ...directlyApplicablePartial
+      } = delta.to;
 
-    const { boundElements, groupIds } = element;
+      const { boundElements, groupIds } = element;
 
-    let nextBoundElements = boundElements;
-    if (addedBoundElements?.length || removedBoundElements?.length) {
-      // If we are adding / updating container bound elements with text,
-      // make sure to unbind existing text elements first, so we don't end up with duplicates.
-      if (
-        addedBoundElements?.length &&
-        addedBoundElements.find((x) => x.type === "text")
-      ) {
-        nextBoundElements = ElementsChange.unbindExistingTextElements(
-          nextBoundElements ?? [],
-          elements,
+      let nextBoundElements = boundElements;
+      if (addedBoundElements?.length || removedBoundElements?.length) {
+        // If we are adding / updating container bound elements with text,
+        // make sure to unbind existing text elements first, so we don't end up with duplicates.
+        if (
+          addedBoundElements?.length &&
+          addedBoundElements.find((x) => x.type === "text")
+        ) {
+          nextBoundElements = ElementsChange.unbindExistingTextElements(
+            nextBoundElements ?? [],
+            elements,
+          );
+        }
+
+        const mergedBoundElements = Object.values(
+          Delta.merge(
+            arrayToObject(nextBoundElements ?? [], (x) => x.id),
+            arrayToObject(addedBoundElements ?? [], (x) => x.id),
+            arrayToObject(removedBoundElements ?? [], (x) => x.id),
+          ),
         );
+
+        nextBoundElements = mergedBoundElements.length
+          ? mergedBoundElements
+          : null;
       }
 
-      const mergedBoundElements = Object.values(
-        Delta.merge(
-          arrayToObject(nextBoundElements ?? [], (x) => x.id),
-          arrayToObject(addedBoundElements ?? [], (x) => x.id),
-          arrayToObject(removedBoundElements ?? [], (x) => x.id),
-        ),
-      );
+      let nextGroupIds = groupIds;
+      if (addedGroupIds?.length || removedGroupIds?.length) {
+        const mergedGroupIds = Object.values(
+          Delta.merge(
+            arrayToObject(groupIds ?? []),
+            arrayToObject(addedGroupIds ?? []),
+            arrayToObject(removedGroupIds ?? []),
+          ),
+        );
+        nextGroupIds = mergedGroupIds;
+      }
 
-      nextBoundElements = mergedBoundElements.length
-        ? mergedBoundElements
-        : null;
-    }
+      const mergedPartial: ElementPartial = {
+        ...directlyApplicablePartial,
+        boundElements: nextBoundElements,
+        groupIds: nextGroupIds,
+      };
 
-    let nextGroupIds = groupIds;
-    if (addedGroupIds?.length || removedGroupIds?.length) {
-      const mergedGroupIds = Object.values(
-        Delta.merge(
-          arrayToObject(groupIds ?? []),
-          arrayToObject(addedGroupIds ?? []),
-          arrayToObject(removedGroupIds ?? []),
-        ),
-      );
-      nextGroupIds = mergedGroupIds;
-    }
+      if (!flags.containsVisibleDifference) {
+        // Strip away fractional as even if it would be different, it doesn't have to result in visible change
+        const { index, ...rest } = mergedPartial;
+        const containsVisibleDifference =
+          ElementsChange.checkForVisibleDifference(element, rest);
 
-    const mergedPartial: ElementPartial = {
-      ...directlyApplicablePartial,
-      boundElements: nextBoundElements,
-      groupIds: nextGroupIds,
+        flags.containsVisibleDifference = containsVisibleDifference;
+      }
+
+      if (!flags.containsZindexDifference) {
+        flags.containsZindexDifference = delta.from.index !== delta.to.index;
+      }
+
+      const updatedElement = newElementWith(element, mergedPartial);
+
+      return updatedElement;
     };
-
-    const updatedElement = newElementWith(element, mergedPartial);
-
-    if (!visibleDifferenceFlag.value) {
-      const containsVisibleDifference =
-        ElementsChange.checkForVisibleDifference(element, mergedPartial);
-
-      visibleDifferenceFlag.value = containsVisibleDifference;
-    }
-
-    return updatedElement;
-  }
-
-  /**
-   * Check for visible changes regardless of whether they were removed, added or updated.
-   */
-  private static checkForVisibleDifference(
-    element: ExcalidrawElement,
-    partial: ElementPartial,
-  ) {
-    if (element.isDeleted && partial.isDeleted !== false) {
-      // When it's deleted and partial is not false, it cannot end up with a visible change
-      return false;
-    }
-
-    if (element.isDeleted && partial.isDeleted === false) {
-      // When we add an element, it results in a visible change
-      return true;
-    }
-
-    if (element.isDeleted === false && partial.isDeleted) {
-      // When we remove an element, it results in a visible change
-      return true;
-    }
-
-    // Check for any difference on a visible element
-    return Delta.isRightDifferent(element, partial);
-  }
 
   /**
    * Note: performs mutation, which we might want to refactor away, not to end up in an inconsistent state.
@@ -998,6 +992,32 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
     );
 
     return nextBoundTextElements.length ? nextBoundTextElements : null;
+  }
+
+  /**
+   * Check for visible changes regardless of whether they were removed, added or updated.
+   */
+  private static checkForVisibleDifference(
+    element: ExcalidrawElement,
+    partial: ElementPartial,
+  ) {
+    if (element.isDeleted && partial.isDeleted !== false) {
+      // When it's deleted and partial is not false, it cannot end up with a visible change
+      return false;
+    }
+
+    if (element.isDeleted && partial.isDeleted === false) {
+      // When we add an element, it results in a visible change
+      return true;
+    }
+
+    if (element.isDeleted === false && partial.isDeleted) {
+      // When we remove an element, it results in a visible change
+      return true;
+    }
+
+    // Check for any difference on a visible element
+    return Delta.isRightDifferent(element, partial);
   }
 
   /**
@@ -1142,6 +1162,31 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       // TODO: refactor mutations away, so we couln't end up in an incosistent state
       redrawTextBoundingBox(boundText, container, false);
     }
+  }
+
+  private static reorderElements(
+    elements: Map<string, ExcalidrawElement>,
+    flags: {
+      containsVisibleDifference: boolean;
+      containsZindexDifference: boolean;
+    },
+  ) {
+    if (!flags.containsZindexDifference) {
+      return elements;
+    }
+
+    const previous = Array.from(elements.values());
+    const reordered = orderByFractionalIndex([...previous]);
+
+    if (
+      !flags.containsVisibleDifference &&
+      Delta.isRightDifferent(previous, reordered, true)
+    ) {
+      // We found a difference in order!
+      flags.containsVisibleDifference = true;
+    }
+
+    return arrayToMap(reordered);
   }
 
   /**

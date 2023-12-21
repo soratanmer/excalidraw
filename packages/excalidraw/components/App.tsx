@@ -182,6 +182,7 @@ import {
   ExcalidrawIframeElement,
   ExcalidrawEmbeddableElement,
   Ordered,
+  OrderedExcalidrawElement,
 } from "../element/types";
 import { getCenter, getDistance } from "../gesture";
 import {
@@ -268,12 +269,12 @@ import {
   muteFSAbortError,
   isTestEnv,
   easeOut,
-  arrayToMap,
   updateStable,
   addEventListener,
   normalizeEOL,
   getDateTime,
   isShallowEqual,
+  arrayToMap,
 } from "../utils";
 import {
   createSrcDoc,
@@ -2139,13 +2140,14 @@ class App extends React.Component<AppProps, AppState> {
             editingElement = element;
           }
         });
-        this.scene.replaceAllElements(actionResult.elements);
 
         if (actionResult.storeAction === StoreAction.UPDATE) {
           this.store.shouldUpdateSnapshot();
         } else if (actionResult.storeAction === StoreAction.CAPTURE) {
           this.store.shouldCaptureIncrement();
         }
+
+        this.scene.replaceAllElements(actionResult.elements);
       }
 
       if (actionResult.files) {
@@ -3675,29 +3677,29 @@ class App extends React.Component<AppProps, AppState> {
       collaborators?: SceneData["collaborators"];
       commitToStore?: SceneData["commitToStore"];
     }) => {
+      const nextElements = syncInvalidIndices(sceneData.elements ?? []);
+
       if (sceneData.commitToStore) {
         this.store.shouldCaptureIncrement();
       }
 
       if (sceneData.elements || sceneData.appState) {
-        let nextAppState = this.state;
+        let nextCommittedAppState = this.state;
+        let nextCommittedElements: Map<string, OrderedExcalidrawElement>;
 
         if (sceneData.appState) {
-          nextAppState = {
+          nextCommittedAppState = {
             ...this.state,
             ...sceneData.appState, // Here we expect just partial appState
           };
         }
 
-        // We expect here that the elements were not mutated from the outside and then passed into `updateScene`,
-        // instead a new instance should be passed inside `updateScene` at all times
         const prevElements = this.scene.getElementsIncludingDeleted();
-        let nextElements = arrayToMap(prevElements);
 
         if (sceneData.elements) {
           /**
            * We need to schedule a snapshot update, as in case `commitToStore` is false  (i.e. remote update),
-           * it's essential for computing local changes after the async action is completed (i.e. not to include remote changes in the diff).
+           * as it's essential for computing local changes after the async action is completed (i.e. not to include remote changes in the diff).
            *
            * This is also a breaking change for all local `updateScene` calls without set `commitToStore` to true,
            * as it makes such updates impossible to undo (previously they were undone coincidentally with the switch to the whole previously captured snapshot by history).
@@ -3707,13 +3709,15 @@ class App extends React.Component<AppProps, AppState> {
            */
           this.store.shouldUpdateSnapshot();
 
-          nextElements = this.store.ignoreUncomittedElements(
+          nextCommittedElements = this.store.ignoreUncomittedElements(
             arrayToMap(prevElements),
-            arrayToMap(syncInvalidIndices(sceneData.elements)),
+            arrayToMap(nextElements),
           );
+        } else {
+          nextCommittedElements = arrayToMap(prevElements);
         }
 
-        this.store.capture(nextElements, nextAppState);
+        this.store.capture(nextCommittedElements, nextCommittedAppState);
       }
 
       if (sceneData.appState) {
@@ -3721,7 +3725,7 @@ class App extends React.Component<AppProps, AppState> {
       }
 
       if (sceneData.elements) {
-        this.scene.replaceAllElements(sceneData.elements);
+        this.scene.replaceAllElements(nextElements);
       }
 
       if (sceneData.collaborators) {
@@ -9016,12 +9020,13 @@ class App extends React.Component<AppProps, AppState> {
   ) => {
     file = await normalizeFile(file);
     try {
+      const elements = this.scene.getElementsIncludingDeleted();
       let ret;
       try {
         ret = await loadSceneOrLibraryFromBlob(
           file,
           this.state,
-          this.scene.getElementsIncludingDeleted(),
+          elements,
           fileHandle,
         );
       } catch (error: any) {
@@ -9050,15 +9055,16 @@ class App extends React.Component<AppProps, AppState> {
       }
 
       if (ret.type === MIME_TYPES.excalidraw) {
-        // First we need to delete existing elements, so they get recorded in the undo stack
-        const deletedExistingElements = this.scene
-          .getNonDeletedElements()
-          .map((element) => newElementWith(element, { isDeleted: true }));
-
+        // Restore the fractional indices by mutating elements and update the
+        // store snapshot, otherwise we would end up with duplicate indices
+        syncInvalidIndices(elements.concat(ret.data.elements));
+        this.store.snapshot = this.store.snapshot.clone(
+          arrayToMap(elements),
+          this.state,
+        );
         this.setState({ isLoading: true });
         this.syncActionResult({
           ...ret.data,
-          elements: deletedExistingElements.concat(ret.data.elements),
           appState: {
             ...(ret.data.appState || this.state),
             isLoading: false,

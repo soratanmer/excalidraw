@@ -80,7 +80,6 @@ export class API {
   };
 
   static getSnapshot = () => {
-    // @ts-expect-error
     return Array.from(h.store.snapshot.elements.values());
   };
 

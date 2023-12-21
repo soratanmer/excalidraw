@@ -32,7 +32,12 @@ export interface IStore {
   /**
    * Get the store snapshot
    */
-  getSnapshot(): Readonly<Snapshot>;
+  get snapshot(): Snapshot;
+
+  /**
+   * Update store snapshot
+   */
+  set snapshot(snapshot: Snapshot);
 
   /**
    * Use to schedule update of the snapshot, useful on updates for which we don't need to calculate increments (i.e. such as remote updates).
@@ -103,11 +108,15 @@ export class Store implements IStore {
   private calculatingIncrement: boolean = false;
   private updatingSnapshot: boolean = false;
 
-  private snapshot = Snapshot.empty();
+  private _snapshot = Snapshot.empty();
 
-  public getSnapshot = () => {
-    return this.snapshot;
-  };
+  public get snapshot() {
+    return this._snapshot;
+  }
+
+  public set snapshot(snapshot: Snapshot) {
+    this._snapshot = snapshot;
+  }
 
   public shouldUpdateSnapshot = () => {
     this.updatingSnapshot = true;
@@ -128,22 +137,22 @@ export class Store implements IStore {
     }
 
     try {
-      const nextSnapshot = this.snapshot.clone(elements, appState);
+      const nextSnapshot = this._snapshot.clone(elements, appState);
 
       // Optimisation, don't continue if nothing has changed
-      if (this.snapshot !== nextSnapshot) {
+      if (this._snapshot !== nextSnapshot) {
         // Calculate and record the changes based on the previous and next snapshot
         if (this.calculatingIncrement) {
           const elementsChange = nextSnapshot.meta.didElementsChange
             ? ElementsChange.calculate(
-                this.snapshot.elements,
+                this._snapshot.elements,
                 nextSnapshot.elements,
               )
             : ElementsChange.empty();
 
           const appStateChange = nextSnapshot.meta.didAppStateChange
             ? AppStateChange.calculate(
-                this.snapshot.appState,
+                this._snapshot.appState,
                 nextSnapshot.appState,
               )
             : AppStateChange.empty();
@@ -158,7 +167,7 @@ export class Store implements IStore {
         }
 
         // Update the snapshot
-        this.snapshot = nextSnapshot;
+        this._snapshot = nextSnapshot;
       }
     } finally {
       // Reset props
@@ -188,7 +197,7 @@ export class Store implements IStore {
         continue;
       }
 
-      const elementSnapshot = this.snapshot.elements.get(id);
+      const elementSnapshot = this._snapshot.elements.get(id);
 
       // Uncomitted element's snapshot doesn't exist, or its snapshot has lower version than the local element
       if (
@@ -208,7 +217,7 @@ export class Store implements IStore {
   };
 
   public clear = (): void => {
-    this.snapshot = Snapshot.empty();
+    this._snapshot = Snapshot.empty();
   };
 
   public destroy = (): void => {
