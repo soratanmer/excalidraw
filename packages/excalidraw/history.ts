@@ -95,7 +95,7 @@ export class History {
     const undoEntry = this.undoStack.pop();
 
     if (undoEntry !== undefined) {
-      const redoEntry = undoEntry.applyLatestChanges(elements, "to");
+      const redoEntry = undoEntry.applyLatestChanges(elements, "inserted");
       this.redoStack.push(redoEntry);
 
       return undoEntry.inverse();
@@ -114,7 +114,7 @@ export class History {
     const redoEntry = this.redoStack.pop();
 
     if (redoEntry !== undefined) {
-      const undoEntry = redoEntry.applyLatestChanges(elements, "from");
+      const undoEntry = redoEntry.applyLatestChanges(elements, "deleted");
       this.undoStack.push(undoEntry);
 
       return redoEntry;
@@ -166,7 +166,7 @@ export class HistoryEntry {
    */
   public applyLatestChanges(
     elements: Map<string, ExcalidrawElement>,
-    modifierOptions: "from" | "to",
+    modifierOptions: "deleted" | "inserted",
   ): HistoryEntry {
     const updatedElementsChange = this.elementsChange.applyLatestChanges(
       elements,

@@ -3704,7 +3704,7 @@ class App extends React.Component<AppProps, AppState> {
            * This is also a breaking change for all local `updateScene` calls without set `commitToStore` to true,
            * as it makes such updates impossible to undo (previously they were undone coincidentally with the switch to the whole previously captured snapshot by history).
            *
-           * WARN: be careful here as moving it elsewhere coulb break the history for remote client without noticing
+           * WARN: be careful here as moving it elsewhere could break the history for remote client without noticing
            * - we need to find a way to test two concurrent client updates simultaneously, while having access to both stores & histories.
            */
           this.store.shouldUpdateSnapshot();

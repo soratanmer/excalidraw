@@ -32,30 +32,30 @@ import {
 /**
  * Represents the difference between two objects of the same type.
  *
- * Both `from` and `to` partials represent the same set of added, removed or updated properties, where:
- * - `from` is a set of all the previous (removed) values
- * - `to` is a set of all the next (added, updated) values
+ * Both `deleted` and `inserted` partials represent the same set of added, removed or updated properties, where:
+ * - `deleted` is a set of all the previous (removed) values
+ * - `inserted` is a set of all the next (added, updated) values
  *
  * Keeping it as pure object (without transient state, side-effects, etc.), so we don't have to instantiate it on load.
  */
 class Delta<T> {
   private constructor(
-    public readonly from: Partial<T>,
-    public readonly to: Partial<T>,
+    public readonly deleted: Partial<T>,
+    public readonly inserted: Partial<T>,
   ) {}
 
   public static create<T>(
-    from: Partial<T>,
-    to: Partial<T>,
+    deleted: Partial<T>,
+    inserted: Partial<T>,
     modifier?: (delta: Partial<T>) => Partial<T>,
-    modifierOptions?: "from" | "to",
+    modifierOptions?: "deleted" | "inserted",
   ) {
-    const modifiedFrom =
-      modifier && modifierOptions !== "to" ? modifier(from) : from;
-    const modifiedTo =
-      modifier && modifierOptions !== "from" ? modifier(to) : to;
+    const modifiedDeleted =
+      modifier && modifierOptions !== "inserted" ? modifier(deleted) : deleted;
+    const modifiedInserted =
+      modifier && modifierOptions !== "deleted" ? modifier(inserted) : inserted;
 
-    return new Delta(modifiedFrom, modifiedTo);
+    return new Delta(modifiedDeleted, modifiedInserted);
   }
 
   /**
@@ -71,16 +71,16 @@ class Delta<T> {
     nextObject: T,
     modifier?: (partial: Partial<T>) => Partial<T>,
     postProcess?: (
-      from: Partial<T>,
-      to: Partial<T>,
+      deleted: Partial<T>,
+      inserted: Partial<T>,
     ) => [Partial<T>, Partial<T>],
   ): Delta<T> {
     if (prevObject === nextObject) {
       return Delta.empty();
     }
 
-    const from = {} as Partial<T>;
-    const to = {} as Partial<T>;
+    const deleted = {} as Partial<T>;
+    const inserted = {} as Partial<T>;
 
     // O(n^3) here, but it's not as bad as it looks:
     // - we do this only on history recordings, not on every frame
@@ -93,15 +93,15 @@ class Delta<T> {
       prevObject,
       nextObject,
     )) {
-      from[key as keyof T] = prevObject[key];
-      to[key as keyof T] = nextObject[key];
+      deleted[key as keyof T] = prevObject[key];
+      inserted[key as keyof T] = nextObject[key];
     }
 
-    const [processedFrom, processedTo] = postProcess
-      ? postProcess(from, to)
-      : [from, to];
+    const [processedDeleted, processedInserted] = postProcess
+      ? postProcess(deleted, inserted)
+      : [deleted, inserted];
 
-    return Delta.create(processedFrom, processedTo, modifier);
+    return Delta.create(processedDeleted, processedInserted, modifier);
   }
 
   public static empty() {
@@ -109,7 +109,9 @@ class Delta<T> {
   }
 
   public static isEmpty<T>(delta: Delta<T>): boolean {
-    return !Object.keys(delta.from).length && !Object.keys(delta.to).length;
+    return (
+      !Object.keys(delta.deleted).length && !Object.keys(delta.inserted).length
+    );
   }
 
   /**
@@ -284,7 +286,7 @@ export class AppStateChange implements Change<AppState> {
   }
 
   public inverse(): AppStateChange {
-    const inversedDelta = Delta.create(this.delta.to, this.delta.from);
+    const inversedDelta = Delta.create(this.delta.inserted, this.delta.deleted);
     return new AppStateChange(inversedDelta);
   }
 
@@ -295,13 +297,13 @@ export class AppStateChange implements Change<AppState> {
     const {
       selectedElementIds: removedSelectedElementIds = {},
       selectedGroupIds: removedSelectedGroupIds = {},
-    } = this.delta.from;
+    } = this.delta.deleted;
 
     const {
       selectedElementIds: addedSelectedElementIds = {},
       selectedGroupIds: addedSelectedGroupIds = {},
       ...directlyApplicablePartial
-    } = this.delta.to;
+    } = this.delta.inserted;
 
     const mergedSelectedElementIds = Delta.merge(
       appState.selectedElementIds,
@@ -337,55 +339,56 @@ export class AppStateChange implements Change<AppState> {
 
   /**
    * It is necessary to post process the partials in case of reference values,
-   * for which we need to calculate the real diff between `from` and `to`.
+   * for which we need to calculate the real diff between `deleted` and `inserted`.
    */
   private static postProcess<T extends ObservedAppState>(
-    from: Partial<T>,
-    to: Partial<T>,
+    deleted: Partial<T>,
+    inserted: Partial<T>,
   ): [Partial<T>, Partial<T>] {
-    if (from.selectedElementIds && to.selectedElementIds) {
-      const fromDifferences = Delta.getLeftDifferences(
-        from.selectedElementIds,
-        to.selectedElementIds,
+    if (deleted.selectedElementIds && inserted.selectedElementIds) {
+      const deletedDifferences = Delta.getLeftDifferences(
+        deleted.selectedElementIds,
+        inserted.selectedElementIds,
       ).reduce((acc, id) => {
         acc[id] = true;
         return acc;
       }, {} as Mutable<ObservedAppState["selectedElementIds"]>);
 
-      const toDifferences = Delta.getRightDifferences(
-        from.selectedElementIds,
-        to.selectedElementIds,
+      const insertedDifferences = Delta.getRightDifferences(
+        deleted.selectedElementIds,
+        inserted.selectedElementIds,
       ).reduce((acc, id) => {
         acc[id] = true;
         return acc;
       }, {} as Mutable<ObservedAppState["selectedElementIds"]>);
 
-      (from as Mutable<Partial<T>>).selectedElementIds = fromDifferences;
-      (to as Mutable<Partial<T>>).selectedElementIds = toDifferences;
+      (deleted as Mutable<Partial<T>>).selectedElementIds = deletedDifferences;
+      (inserted as Mutable<Partial<T>>).selectedElementIds =
+        insertedDifferences;
     }
 
-    if (from.selectedGroupIds && to.selectedGroupIds) {
-      const fromDifferences = Delta.getLeftDifferences(
-        from.selectedGroupIds,
-        to.selectedGroupIds,
+    if (deleted.selectedGroupIds && inserted.selectedGroupIds) {
+      const deletedDifferences = Delta.getLeftDifferences(
+        deleted.selectedGroupIds,
+        inserted.selectedGroupIds,
       ).reduce((acc, groupId) => {
-        acc[groupId] = from.selectedGroupIds![groupId];
+        acc[groupId] = deleted.selectedGroupIds![groupId];
         return acc;
       }, {} as Mutable<ObservedAppState["selectedGroupIds"]>);
 
-      const toDifferences = Delta.getRightDifferences(
-        from.selectedGroupIds,
-        to.selectedGroupIds,
+      const insertedDifferences = Delta.getRightDifferences(
+        deleted.selectedGroupIds,
+        inserted.selectedGroupIds,
       ).reduce((acc, groupId) => {
-        acc[groupId] = to.selectedGroupIds![groupId];
+        acc[groupId] = inserted.selectedGroupIds![groupId];
         return acc;
       }, {} as Mutable<ObservedAppState["selectedGroupIds"]>);
 
-      (from as Mutable<Partial<T>>).selectedGroupIds = fromDifferences;
-      (to as Mutable<Partial<T>>).selectedGroupIds = toDifferences;
+      (deleted as Mutable<Partial<T>>).selectedGroupIds = deletedDifferences;
+      (inserted as Mutable<Partial<T>>).selectedGroupIds = insertedDifferences;
     }
 
-    return [from, to];
+    return [deleted, inserted];
   }
 
   /**
@@ -552,7 +555,7 @@ type ElementPartial = Omit<ElementUpdate<ExcalidrawElement>, "seed">;
  * We could be smarter about the change in the future, ideas for improvements are:
  * - for memory, share the same delta instances between different deltas (flyweight-like)
  * - for serialization, compress the deltas into a tree-like structures with custom pointers or let one delta instance contain multiple element ids
- * - for performance, emit the changes directly by the user actions, then apply them in from store into the state (no diffing!)
+ * - for performance, emit the changes directly by the user actions, then apply them from store into the state (no diffing!)
  * - for performance, add operations in addition to deltas, which increment (decrement) properties by given value (could be used i.e. for presence-like move)
  */
 export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
@@ -571,18 +574,19 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       ElementsChange.validateInvariants(
         "added",
         added,
-        // Element could be added as deleted, ignoring "to"
-        (from, _) => from.isDeleted === true,
+        // Element could be inserted as deleted - ignoring "inserted"
+        (deleted, _) => deleted.isDeleted === true,
       );
       ElementsChange.validateInvariants(
         "removed",
         removed,
-        (from, to) => from.isDeleted === false && to.isDeleted === true,
+        (deleted, inserted) =>
+          deleted.isDeleted === false && inserted.isDeleted === true,
       );
       ElementsChange.validateInvariants(
         "updated",
         updated,
-        (from, to) => !from.isDeleted && !to.isDeleted,
+        (deleted, inserted) => !deleted.isDeleted && !inserted.isDeleted,
       );
     }
 
@@ -592,10 +596,13 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
   private static validateInvariants(
     type: "added" | "removed" | "updated",
     deltas: Map<string, Delta<ElementPartial>>,
-    satifiesInvariants: (from: ElementPartial, to: ElementPartial) => boolean,
+    satifiesInvariants: (
+      deleted: ElementPartial,
+      inserted: ElementPartial,
+    ) => boolean,
   ) {
     for (const [id, delta] of deltas.entries()) {
-      if (!satifiesInvariants(delta.from, delta.to)) {
+      if (!satifiesInvariants(delta.deleted, delta.inserted)) {
         console.error(
           `Broken invariant for "${type}" delta, element "${id}", delta:`,
           delta,
@@ -630,12 +637,12 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       const nextElement = nextElements.get(prevElement.id);
 
       if (!nextElement) {
-        const from = { ...prevElement, isDeleted: false } as ElementPartial;
-        const to = { isDeleted: true } as ElementPartial;
+        const deleted = { ...prevElement, isDeleted: false } as ElementPartial;
+        const inserted = { isDeleted: true } as ElementPartial;
 
         const delta = Delta.create(
-          from,
-          to,
+          deleted,
+          inserted,
           ElementsChange.stripIrrelevantProps,
         );
 
@@ -647,15 +654,15 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       const prevElement = prevElements.get(nextElement.id);
 
       if (!prevElement) {
-        const from = { isDeleted: true } as ElementPartial;
-        const to = {
+        const deleted = { isDeleted: true } as ElementPartial;
+        const inserted = {
           ...nextElement,
           isDeleted: false,
         } as ElementPartial;
 
         const delta = Delta.create(
-          from,
-          to,
+          deleted,
+          inserted,
           ElementsChange.stripIrrelevantProps,
         );
 
@@ -707,7 +714,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       const inversedDeltas = new Map<string, Delta<ElementPartial>>();
 
       for (const [id, delta] of deltas.entries()) {
-        inversedDeltas.set(id, Delta.create(delta.to, delta.from));
+        inversedDeltas.set(id, Delta.create(delta.inserted, delta.deleted));
       }
 
       return inversedDeltas;
@@ -737,12 +744,12 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    * remotely deleted element/s through a series of undos & redos.
    *
    * @param elements current elements
-   * @param modifierOptions defines which of the delta (`from` or `to`) will be updated
+   * @param modifierOptions defines which of the delta (`deleted` or `inserted`) will be updated
    * @returns new instance with modified delta/s
    */
   public applyLatestChanges(
     elements: ReadonlyMap<string, ExcalidrawElement>,
-    modifierOptions: "from" | "to",
+    modifierOptions: "deleted" | "inserted",
   ): ElementsChange {
     const modifier =
       (element: ExcalidrawElement) => (partial: ElementPartial) => {
@@ -776,8 +783,8 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
 
         if (existingElement) {
           const modifiedDelta = Delta.create(
-            delta.from,
-            delta.to,
+            delta.deleted,
+            delta.inserted,
             modifier(existingElement),
             modifierOptions,
           );
@@ -890,13 +897,13 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       delta: Delta<ElementPartial>,
     ): ExcalidrawElement => {
       const { boundElements: removedBoundElements, groupIds: removedGroupIds } =
-        delta.from;
+        delta.deleted;
 
       const {
         boundElements: addedBoundElements,
         groupIds: addedGroupIds,
         ...directlyApplicablePartial
-      } = delta.to;
+      } = delta.inserted;
 
       const { boundElements, groupIds } = element;
 
@@ -955,7 +962,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       }
 
       if (!flags.containsZindexDifference) {
-        flags.containsZindexDifference = delta.from.index !== delta.to.index;
+        flags.containsZindexDifference = delta.deleted.index !== delta.inserted.index;
       }
 
       const updatedElement = newElementWith(element, mergedPartial);
@@ -1191,63 +1198,65 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
 
   /**
    * It is necessary to post process the partials in case of reference values,
-   * for which we need to calculate the real diff between `from` and `to`.
+   * for which we need to calculate the real diff between `deleted` and `inserted`.
    */
   private static postProcess(
-    from: ElementPartial,
-    to: ElementPartial,
+    deleted: ElementPartial,
+    inserted: ElementPartial,
   ): [ElementPartial, ElementPartial] {
-    if (from.boundElements && to.boundElements) {
-      const fromDifferences = arrayToObject(
+    if (deleted.boundElements && inserted.boundElements) {
+      const deletedDifferences = arrayToObject(
         Delta.getLeftDifferences(
-          arrayToObject(from.boundElements, (x) => x.id),
-          arrayToObject(to.boundElements, (x) => x.id),
+          arrayToObject(deleted.boundElements, (x) => x.id),
+          arrayToObject(inserted.boundElements, (x) => x.id),
         ),
       );
-      const toDifferences = arrayToObject(
+      const insertedDifferences = arrayToObject(
         Delta.getRightDifferences(
-          arrayToObject(from.boundElements, (x) => x.id),
-          arrayToObject(to.boundElements, (x) => x.id),
+          arrayToObject(deleted.boundElements, (x) => x.id),
+          arrayToObject(inserted.boundElements, (x) => x.id),
         ),
       );
 
-      const fromBoundElements = from.boundElements.filter(
-        ({ id }) => !!fromDifferences[id],
+      const insertedBoundElements = deleted.boundElements.filter(
+        ({ id }) => !!deletedDifferences[id],
       );
-      const toBoundElements = to.boundElements.filter(
-        ({ id }) => !!toDifferences[id],
+      const deletedBoundElements = inserted.boundElements.filter(
+        ({ id }) => !!insertedDifferences[id],
       );
 
-      (from as Mutable<typeof from>).boundElements = fromBoundElements;
-      (to as Mutable<typeof to>).boundElements = toBoundElements;
+      (deleted as Mutable<typeof deleted>).boundElements =
+        insertedBoundElements;
+      (inserted as Mutable<typeof inserted>).boundElements =
+        deletedBoundElements;
     }
 
-    if (from.groupIds && to.groupIds) {
-      const fromDifferences = arrayToObject(
+    if (deleted.groupIds && inserted.groupIds) {
+      const deletedDifferences = arrayToObject(
         Delta.getLeftDifferences(
-          arrayToObject(from.groupIds),
-          arrayToObject(to.groupIds),
+          arrayToObject(deleted.groupIds),
+          arrayToObject(inserted.groupIds),
         ),
       );
-      const toDifferences = arrayToObject(
+      const insertedDifferences = arrayToObject(
         Delta.getRightDifferences(
-          arrayToObject(from.groupIds),
-          arrayToObject(to.groupIds),
+          arrayToObject(deleted.groupIds),
+          arrayToObject(inserted.groupIds),
         ),
       );
 
-      const fromGroupIds = from.groupIds.filter(
-        (groupId) => !!fromDifferences[groupId],
+      const deletedGroupIds = deleted.groupIds.filter(
+        (groupId) => !!deletedDifferences[groupId],
       );
-      const toGroupIds = to.groupIds.filter(
-        (groupId) => !!toDifferences[groupId],
+      const insertedGroupIds = inserted.groupIds.filter(
+        (groupId) => !!insertedDifferences[groupId],
       );
 
-      (from as Mutable<typeof from>).groupIds = fromGroupIds;
-      (to as Mutable<typeof to>).groupIds = toGroupIds;
+      (deleted as Mutable<typeof deleted>).groupIds = deletedGroupIds;
+      (inserted as Mutable<typeof inserted>).groupIds = insertedGroupIds;
     }
 
-    return [from, to];
+    return [deleted, inserted];
   }
 
   private static stripIrrelevantProps(
