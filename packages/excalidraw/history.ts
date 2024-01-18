@@ -1,9 +1,19 @@
 import { AppStateChange, ElementsChange } from "./change";
 import { ExcalidrawElement } from "./element/types";
+import { Emitter } from "./emitter";
 import { Snapshot } from "./store";
 import { AppState } from "./types";
 
+export class HistoryChangedEvent {
+  constructor(
+    public readonly isUndoStackEmpty: boolean,
+    public readonly isRedoStackEmpty: boolean,
+  ) {}
+}
+
 export class History {
+  public readonly onHistoryChangeEmitter = new Emitter<[HistoryChangedEvent]>();
+
   private readonly undoStack: HistoryEntry[] = [];
   private readonly redoStack: HistoryEntry[] = [];
 
@@ -34,6 +44,9 @@ export class History {
 
       // As a new entry was pushed, we invalidate the redo stack
       this.redoStack.length = 0;
+      this.onHistoryChangeEmitter.trigger(
+        new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
+      );
     }
   }
 
@@ -60,6 +73,10 @@ export class History {
     snapshot: Readonly<Snapshot>,
   ): [Map<string, ExcalidrawElement>, AppState] | void {
     let historyEntry = action(elements);
+
+    this.onHistoryChangeEmitter.trigger(
+      new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
+    );
 
     // Nothing to undo / redo
     if (historyEntry === null) {

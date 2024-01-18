@@ -140,10 +140,6 @@ class Scene {
   };
   private versionNonce: number | undefined;
 
-  getElementsMapIncludingDeleted() {
-    return this.elementsMap;
-  }
-
   getNonDeletedElementsMap() {
     return this.nonDeletedElementsMap;
   }

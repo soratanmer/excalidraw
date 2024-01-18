@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
 import { Action, ActionResult, StoreAction } from "./types";
 import { UndoIcon, RedoIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";
-import { History } from "../history";
+import { History, HistoryChangedEvent } from "../history";
 import { AppState } from "../types";
 import { KEYS } from "../keys";
 import { arrayToMap } from "../utils";
@@ -39,6 +40,25 @@ const writeData = (
   return { storeAction: StoreAction.NONE };
 };
 
+const useEmitter = (emitter: History["onHistoryChangeEmitter"]) => {
+  const [event, setEvent] = useState<HistoryChangedEvent>({
+    isUndoStackEmpty: true,
+    isRedoStackEmpty: true,
+  });
+
+  useEffect(() => {
+    const unsubscribe = emitter.on((historyChangedEvent) => {
+      setEvent(historyChangedEvent);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [emitter]);
+
+  return event;
+};
+
 type ActionCreator = (history: History, store: IStore) => Action;
 
 export const createUndoAction: ActionCreator = (history, store) => ({
@@ -52,16 +72,20 @@ export const createUndoAction: ActionCreator = (history, store) => ({
     event[KEYS.CTRL_OR_CMD] &&
     event.key.toLowerCase() === KEYS.Z &&
     !event.shiftKey,
-  PanelComponent: ({ updateData, data }) => (
-    <ToolButton
-      type="button"
-      icon={UndoIcon}
-      aria-label={t("buttons.undo")}
-      onClick={updateData}
-      size={data?.size || "medium"}
-      disabled={history.isUndoStackEmpty}
-    />
-  ),
+  PanelComponent: ({ updateData, data }) => {
+    const { isUndoStackEmpty } = useEmitter(history.onHistoryChangeEmitter);
+
+    return (
+      <ToolButton
+        type="button"
+        icon={UndoIcon}
+        aria-label={t("buttons.undo")}
+        onClick={updateData}
+        size={data?.size || "medium"}
+        disabled={isUndoStackEmpty}
+      />
+    );
+  },
 });
 
 export const createRedoAction: ActionCreator = (history, store) => ({
@@ -76,14 +100,18 @@ export const createRedoAction: ActionCreator = (history, store) => ({
       event.shiftKey &&
       event.key.toLowerCase() === KEYS.Z) ||
     (isWindows && event.ctrlKey && !event.shiftKey && event.key === KEYS.Y),
-  PanelComponent: ({ updateData, data }) => (
-    <ToolButton
-      type="button"
-      icon={RedoIcon}
-      aria-label={t("buttons.redo")}
-      onClick={updateData}
-      size={data?.size || "medium"}
-      disabled={history.isRedoStackEmpty}
-    />
-  ),
+  PanelComponent: ({ updateData, data }) => {
+    const { isRedoStackEmpty } = useEmitter(history.onHistoryChangeEmitter);
+
+    return (
+      <ToolButton
+        type="button"
+        icon={RedoIcon}
+        aria-label={t("buttons.redo")}
+        onClick={updateData}
+        size={data?.size || "medium"}
+        disabled={isRedoStackEmpty}
+      />
+    );
+  },
 });

@@ -2434,8 +2434,8 @@ class App extends React.Component<AppProps, AppState> {
       });
     }
 
-    this.store.listen((...args) => {
-      this.history.record(...args);
+    this.store.onStoreIncrementEmitter.on((increment) => {
+      this.history.record(increment.elementsChange, increment.appStateChange);
     });
 
     this.scene.addCallback(this.onSceneUpdated);
@@ -2494,7 +2494,7 @@ class App extends React.Component<AppProps, AppState> {
     this.laserTrails.stop();
     this.eraserTrail.stop();
     this.onChangeEmitter.clear();
-    this.store.destroy();
+    this.store.onStoreIncrementEmitter.clear();
     ShapeCache.destroy();
     SnapCache.destroy();
     clearTimeout(touchTimeout);

@@ -166,6 +166,12 @@ exports[`history > initializing scene should end up with no history entry > [end
 
 exports[`history > initializing scene should end up with no history entry > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -407,6 +413,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should remove remotely added bound text when it's container is removed through the history > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -626,6 +638,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore remotely added bound text when it's container is added through the history > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
@@ -836,6 +854,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore remotely deleted container when it's bound text element is updated through the history > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
@@ -1138,6 +1162,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind existing text elements when bound text element is added through the history > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -1396,6 +1426,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should update bound text element when it's container was updated on remote after it's added through the history > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -1654,6 +1690,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should update remotely added bound text when it's container was updated through the history > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -1827,6 +1869,12 @@ exports[`history > multiplayer undo/redo > should allow the element author to re
 
 exports[`history > multiplayer undo/redo > should allow the element author to restore his remotely deleted element > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -2042,6 +2090,12 @@ exports[`history > multiplayer undo/redo > should allow the element author to re
 
 exports[`history > multiplayer undo/redo > should allow the element author to restore the element he deleted back to the state at the time of removal > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -2329,6 +2383,12 @@ exports[`history > multiplayer undo/redo > should iterate through the history wh
 
 exports[`history > multiplayer undo/redo > should iterate through the history when element changes relate only to remotely deleted elements > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -2739,6 +2799,12 @@ exports[`history > multiplayer undo/redo > should iterate through the history wh
 
 exports[`history > multiplayer undo/redo > should iterate through the history when selection changes relate only to remotely deleted elements > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -3096,6 +3162,12 @@ exports[`history > multiplayer undo/redo > should iterate through the history wh
 
 exports[`history > multiplayer undo/redo > should iterate through the history when z-index changes do not produce visible change > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -3439,6 +3511,12 @@ exports[`history > multiplayer undo/redo > should not let remote changes to inte
 
 exports[`history > multiplayer undo/redo > should not let remote changes to interfere with in progress dragging > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -3816,6 +3894,12 @@ exports[`history > multiplayer undo/redo > should not let remote changes to inte
 
 exports[`history > multiplayer undo/redo > should not let remote changes to interfere with in progress freedraw > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -4063,6 +4147,12 @@ exports[`history > multiplayer undo/redo > should not let remote changes to inte
 
 exports[`history > multiplayer undo/redo > should not let remote changes to interfere with in progress resizing > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -4313,6 +4403,12 @@ exports[`history > multiplayer undo/redo > should not override remote changes on
 
 exports[`history > multiplayer undo/redo > should not override remote changes on different elements > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
@@ -4531,6 +4627,12 @@ exports[`history > multiplayer undo/redo > should not override remote changes on
 
 exports[`history > multiplayer undo/redo > should not override remote changes on different properties > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -4748,6 +4850,12 @@ exports[`history > multiplayer undo/redo > should update history entries after r
 
 exports[`history > multiplayer undo/redo > should update history entries after remote changes on the same properties > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
@@ -5020,6 +5128,12 @@ exports[`history > scene import via drag&drop should create new history entry > 
 
 exports[`history > scene import via drag&drop should create new history entry > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -5253,6 +5367,12 @@ exports[`history > should clear the redo stack on a new history entry > [end of 
 
 exports[`history > should clear the redo stack on a new history entry > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -5510,6 +5630,12 @@ exports[`history > undo/redo supports basic element creation, selection and dele
 
 exports[`history > undo/redo supports basic element creation, selection and deletion > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -5951,6 +6077,12 @@ exports[`history > undo/redo supports z-index actions > [end of test] element 2 
 
 exports[`history > undo/redo supports z-index actions > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
@@ -6508,6 +6640,12 @@ exports[`history > undo/redo works properly with groups > [end of test] element 
 
 exports[`history > undo/redo works properly with groups > [end of test] history 1`] = `
 History {
+  "onHistoryChangeEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
   "redoStack": [],
   "undoStack": [
     HistoryEntry {
