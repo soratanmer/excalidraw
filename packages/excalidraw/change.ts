@@ -11,8 +11,10 @@ import {
 import { hasBoundTextElement, isBoundToContainer } from "./element/typeChecks";
 import {
   BoundElement,
-  ExcalidrawElement,
   ExcalidrawTextElement,
+  Ordered,
+  OrderedExcalidrawElement,
+  SceneElementsMap,
 } from "./element/types";
 import { orderByFractionalIndex } from "./fractionalIndex";
 import {
@@ -207,7 +209,7 @@ class Delta<T> {
     skipShallowCompare: boolean = false,
   ) {
     if (object1 === object2) {
-      return [];
+      return;
     }
 
     let keys: string[] = [];
@@ -292,7 +294,7 @@ export class AppStateChange implements Change<AppState> {
 
   public applyTo(
     appState: Readonly<AppState>,
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
   ): [AppState, boolean] {
     const {
       selectedElementIds: removedSelectedElementIds = {},
@@ -399,7 +401,7 @@ export class AppStateChange implements Change<AppState> {
   private filterInvisibleChanges(
     prevAppState: AppState,
     nextAppState: ObservedAppState,
-    nextElements: ReadonlyMap<string, ExcalidrawElement>,
+    nextElements: SceneElementsMap,
   ): boolean {
     const visibleDifferenceFlag = { value: false };
     const containsStandaloneDifference = Delta.isRightDifferent(
@@ -472,7 +474,7 @@ export class AppStateChange implements Change<AppState> {
 
   private static filterSelectedElements(
     selectedElementIds: ObservedElementsAppState["selectedElementIds"],
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     visibleDifferenceFlag: { value: boolean },
   ) {
     const nextSelectedElementIds = { ...selectedElementIds };
@@ -493,7 +495,7 @@ export class AppStateChange implements Change<AppState> {
 
   private static filterLinearElement(
     linearElement: ObservedElementsAppState["editingLinearElement"],
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     visibleDifferenceFlag: { value: boolean },
   ) {
     if (!linearElement) {
@@ -546,7 +548,7 @@ export class AppStateChange implements Change<AppState> {
   }
 }
 
-type ElementPartial = Omit<ElementUpdate<ExcalidrawElement>, "seed">;
+type ElementPartial = Omit<ElementUpdate<OrderedExcalidrawElement>, "seed">;
 
 /**
  * Elements change is a low level primitive to capture a change between two sets of elements.
@@ -558,7 +560,7 @@ type ElementPartial = Omit<ElementUpdate<ExcalidrawElement>, "seed">;
  * - for performance, emit the changes directly by the user actions, then apply them from store into the state (no diffing!)
  * - for performance, add operations in addition to deltas, which increment (decrement) properties by given value (could be used i.e. for presence-like move)
  */
-export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
+export class ElementsChange implements Change<SceneElementsMap> {
   private constructor(
     private readonly added: Map<string, Delta<ElementPartial>>,
     private readonly removed: Map<string, Delta<ElementPartial>>,
@@ -620,7 +622,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    *
    * @returns `ElementsChange` instance representing the `Delta` changes between the two sets of elements.
    */
-  public static calculate<T extends ExcalidrawElement>(
+  public static calculate<T extends OrderedExcalidrawElement>(
     prevElements: Map<string, T>,
     nextElements: Map<string, T>,
   ): ElementsChange {
@@ -748,11 +750,11 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    * @returns new instance with modified delta/s
    */
   public applyLatestChanges(
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     modifierOptions: "deleted" | "inserted",
   ): ElementsChange {
     const modifier =
-      (element: ExcalidrawElement) => (partial: ElementPartial) => {
+      (element: OrderedExcalidrawElement) => (partial: ElementPartial) => {
         const latestPartial: { [key: string]: unknown } = {};
 
         for (const key of Object.keys(partial) as Array<keyof typeof partial>) {
@@ -805,9 +807,9 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
   }
 
   public applyTo(
-    elements: Map<string, ExcalidrawElement>,
-    snapshot: ReadonlyMap<string, ExcalidrawElement>,
-  ): [Map<string, ExcalidrawElement>, boolean] {
+    elements: SceneElementsMap,
+    snapshot: ReadonlyMap<string, OrderedExcalidrawElement>,
+  ): [SceneElementsMap, boolean] {
     const flags = {
       containsVisibleDifference: false,
       containsZindexDifference: false,
@@ -815,10 +817,10 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
 
     const applyDelta = ElementsChange.createApplier(elements, flags);
 
-    const changes = new Map<string, ExcalidrawElement>();
+    const changes = new Map<string, OrderedExcalidrawElement>();
 
     function setElements(
-      ...changedElements: (ExcalidrawElement | undefined)[]
+      ...changedElements: (OrderedExcalidrawElement | undefined)[]
     ) {
       for (const element of changedElements) {
         if (element) {
@@ -886,16 +888,16 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
 
   private static createApplier =
     (
-      elements: ReadonlyMap<string, ExcalidrawElement>,
+      elements: SceneElementsMap,
       flags: {
         containsVisibleDifference: boolean;
         containsZindexDifference: boolean;
       },
     ) =>
     (
-      element: ExcalidrawElement,
+      element: OrderedExcalidrawElement,
       delta: Delta<ElementPartial>,
-    ): ExcalidrawElement => {
+    ): OrderedExcalidrawElement => {
       const { boundElements: removedBoundElements, groupIds: removedGroupIds } =
         delta.deleted;
 
@@ -962,7 +964,8 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       }
 
       if (!flags.containsZindexDifference) {
-        flags.containsZindexDifference = delta.deleted.index !== delta.inserted.index;
+        flags.containsZindexDifference =
+          delta.deleted.index !== delta.inserted.index;
       }
 
       const updatedElement = newElementWith(element, mergedPartial);
@@ -975,7 +978,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    */
   private static unbindExistingTextElements(
     boundElements: readonly BoundElement[],
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
   ): readonly BoundElement[] | null {
     const boundTextElements = boundElements.filter((x) => x.type === "text");
 
@@ -1005,7 +1008,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    * Check for visible changes regardless of whether they were removed, added or updated.
    */
   private static checkForVisibleDifference(
-    element: ExcalidrawElement,
+    element: OrderedExcalidrawElement,
     partial: ElementPartial,
   ) {
     if (element.isDeleted && partial.isDeleted !== false) {
@@ -1030,23 +1033,23 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
   /**
    * Helper for related text containers logic.
    */
-  private static whenTextContainer(element: ExcalidrawElement) {
+  private static whenTextContainer(element: OrderedExcalidrawElement) {
     return hasBoundTextElement(element) ? this : undefined;
   }
 
   /**
    * Helper for related bound text logic.
    */
-  private static whenBoundText(element: ExcalidrawElement) {
+  private static whenBoundText(element: OrderedExcalidrawElement) {
     return isBoundToContainer(element) ? this : undefined;
   }
 
   /**
    * When bound text is removed through history, we need to unbind it from container.
    */
-  private static unbindContainer(boundText: ExcalidrawElement) {
+  private static unbindContainer(boundText: OrderedExcalidrawElement) {
     if ((boundText as ExcalidrawTextElement).containerId) {
-      return newElementWith(boundText as ExcalidrawTextElement, {
+      return newElementWith(boundText as Ordered<ExcalidrawTextElement>, {
         containerId: null,
       });
     }
@@ -1056,8 +1059,8 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    * When text bindable container is removed through history, we need to remove the bound text.
    */
   private static removeBoundText(
-    container: ExcalidrawElement,
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    container: OrderedExcalidrawElement,
+    elements: SceneElementsMap,
   ) {
     const boundTextElementId = getBoundTextElementId(container);
     const boundText = boundTextElementId
@@ -1075,8 +1078,8 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    * When text bindable container is added through history, we need to restore it's bound text.
    */
   private static restoreBoundText(
-    container: ExcalidrawElement,
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    container: OrderedExcalidrawElement,
+    elements: SceneElementsMap,
   ) {
     const boundTextElementId = getBoundTextElementId(container);
     const boundText = boundTextElementId
@@ -1084,7 +1087,8 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       : undefined;
 
     if (boundText) {
-      const updates: Mutable<ElementUpdate<ExcalidrawTextElement>> = {};
+      const updates: Mutable<ElementUpdate<Ordered<ExcalidrawTextElement>>> =
+        {};
 
       if ((boundText as ExcalidrawTextElement).containerId !== container.id) {
         updates.containerId = container.id;
@@ -1104,8 +1108,8 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
    * When bound text is added through a history, we need to restore the container if it was deleted.
    */
   private static restoreContainer(
-    boundText: ExcalidrawElement,
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    boundText: OrderedExcalidrawElement,
+    elements: SceneElementsMap,
   ) {
     const { containerId } = boundText as ExcalidrawTextElement;
     const container = containerId ? elements.get(containerId) : undefined;
@@ -1116,19 +1120,19 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       }
     } else if ((boundText as ExcalidrawTextElement).containerId) {
       // Unbind when we cannot find the container
-      return newElementWith(boundText as ExcalidrawTextElement, {
+      return newElementWith(boundText as Ordered<ExcalidrawTextElement>, {
         containerId: null,
       });
     }
   }
 
   private static redrawTextBoundingBoxes(
-    changed: ReadonlyMap<string, ExcalidrawElement>,
-    elements: ReadonlyMap<string, ExcalidrawElement>,
+    changed: ReadonlyMap<string, OrderedExcalidrawElement>,
+    elements: SceneElementsMap,
   ) {
     const boxesToRedraw = new Map<
       string,
-      { container: ExcalidrawElement; boundText: ExcalidrawTextElement }
+      { container: OrderedExcalidrawElement; boundText: ExcalidrawTextElement }
     >();
 
     for (const element of changed.values()) {
@@ -1165,14 +1169,13 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
         continue;
       }
 
-      // TODO: this is a huge bottleneck which can take up to 96% of undo / redo computation time
-      // TODO: refactor mutations away, so we couln't end up in an incosistent state
-      redrawTextBoundingBox(boundText, container, false);
+      // TODO: refactor mutations away, so we couldn't end up in an incosistent state
+      redrawTextBoundingBox(boundText, container, elements, false);
     }
   }
 
   private static reorderElements(
-    elements: Map<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     flags: {
       containsVisibleDifference: boolean;
       containsZindexDifference: boolean;
@@ -1193,7 +1196,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
       flags.containsVisibleDifference = true;
     }
 
-    return arrayToMap(reordered);
+    return arrayToMap(reordered) as typeof elements;
   }
 
   /**
@@ -1260,7 +1263,7 @@ export class ElementsChange implements Change<Map<string, ExcalidrawElement>> {
   }
 
   private static stripIrrelevantProps(
-    partial: Partial<ExcalidrawElement>,
+    partial: Partial<OrderedExcalidrawElement>,
   ): ElementPartial {
     const { id, updated, version, versionNonce, seed, ...strippedPartial } =
       partial;

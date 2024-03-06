@@ -711,12 +711,6 @@ class App extends React.Component<AppProps, AppState> {
     });
     this.history = new History();
 
-    this.actionManager = new ActionManager(
-      this.syncActionResult,
-      () => this.state,
-      () => this.scene.getElementsIncludingDeleted(),
-      this,
-    );
     this.actionManager.registerAll(actions);
     this.actionManager.registerAction(
       createUndoAction(this.history, this.store),
@@ -2639,7 +2633,8 @@ class App extends React.Component<AppProps, AppState> {
   componentDidUpdate(prevProps: AppProps, prevState: AppState) {
     this.updateEmbeddables();
     const elements = this.scene.getElementsIncludingDeleted();
-    const elementsMap = this.scene.getNonDeletedElementsMap();
+    const elementsMap = this.scene.getElementsMapIncludingDeleted();
+    const nonDeletedElementsMap = this.scene.getNonDeletedElementsMap();
 
     if (!this.state.showWelcomeScreen && !elements.length) {
       this.setState({ showWelcomeScreen: true });
@@ -2795,10 +2790,10 @@ class App extends React.Component<AppProps, AppState> {
           LinearElementEditor.getPointAtIndexGlobalCoordinates(
             multiElement,
             -1,
-            elementsMap,
+            nonDeletedElementsMap,
           ),
         ),
-        elementsMap,
+        nonDeletedElementsMap,
       );
     }
 

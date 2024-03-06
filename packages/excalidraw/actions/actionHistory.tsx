@@ -8,12 +8,12 @@ import { AppState } from "../types";
 import { KEYS } from "../keys";
 import { arrayToMap } from "../utils";
 import { isWindows } from "../constants";
-import { ExcalidrawElement } from "../element/types";
+import { SceneElementsMap } from "../element/types";
 import { IStore } from "../store";
 
 const writeData = (
   appState: Readonly<AppState>,
-  updater: () => [Map<string, ExcalidrawElement>, AppState] | void,
+  updater: () => [SceneElementsMap, AppState] | void,
 ): ActionResult => {
   if (
     !appState.multiElement &&
@@ -66,7 +66,11 @@ export const createUndoAction: ActionCreator = (history, store) => ({
   trackEvent: { category: "history" },
   perform: (elements, appState) =>
     writeData(appState, () =>
-      history.undo(arrayToMap(elements), appState, store.snapshot),
+      history.undo(
+        arrayToMap(elements) as SceneElementsMap, // TODO: refactor action manager to already include `SceneElementsMap`
+        appState,
+        store.snapshot,
+      ),
     ),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] &&
@@ -93,7 +97,11 @@ export const createRedoAction: ActionCreator = (history, store) => ({
   trackEvent: { category: "history" },
   perform: (elements, appState) =>
     writeData(appState, () =>
-      history.redo(arrayToMap(elements), appState, store.snapshot),
+      history.redo(
+        arrayToMap(elements) as SceneElementsMap, // TODO: refactor action manager to already include `SceneElementsMap`
+        appState,
+        store.snapshot,
+      ),
     ),
   keyTest: (event) =>
     (event[KEYS.CTRL_OR_CMD] &&

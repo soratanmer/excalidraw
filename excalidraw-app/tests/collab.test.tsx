@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import {
+  act,
   render,
   updateSceneData,
   waitFor,
@@ -93,7 +94,10 @@ describe("collaboration", () => {
     });
 
     updateSceneData({
-      elements: syncInvalidIndices([rect1, newElementWith(h.elements[1], { isDeleted: true })]),
+      elements: syncInvalidIndices([
+        rect1,
+        newElementWith(h.elements[1], { isDeleted: true }),
+      ]),
       commitToStore: true,
     });
 
@@ -123,7 +127,7 @@ describe("collaboration", () => {
     });
 
     const undoAction = createUndoAction(h.history, h.store);
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
 
     // with explicit undo (as addition) we expect our item to be restored from the snapshot!
     await waitFor(() => {
@@ -154,9 +158,9 @@ describe("collaboration", () => {
     });
 
     const redoAction = createRedoAction(h.history, h.store);
-    h.app.actionManager.executeAction(redoAction);
+    act(() => h.app.actionManager.executeAction(redoAction));
 
-    // with explicit redo (as removal) we again restored the element from the snapshot!
+    // with explicit redo (as removal) we again restore the element from the snapshot!
     await waitFor(() => {
       expect(API.getUndoStack().length).toBe(2);
       expect(API.getRedoStack().length).toBe(0);
@@ -170,11 +174,14 @@ describe("collaboration", () => {
       ]);
     });
 
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
 
     // simulate local update
     updateSceneData({
-      elements: syncInvalidIndices([h.elements[0], newElementWith(h.elements[1], { x: 100 })]),
+      elements: syncInvalidIndices([
+        h.elements[0],
+        newElementWith(h.elements[1], { x: 100 }),
+      ]),
       commitToStore: true,
     });
 
@@ -191,7 +198,7 @@ describe("collaboration", () => {
       ]);
     });
 
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
 
     // we expect to iterate the stack to the first visible change
     await waitFor(() => {
@@ -223,7 +230,7 @@ describe("collaboration", () => {
       expect(h.elements).toEqual([expect.objectContaining(rect1Props)]);
     });
 
-    h.app.actionManager.executeAction(redoAction);
+    act(() => h.app.actionManager.executeAction(redoAction));
 
     // with explicit redo (as update) we again restored the element from the snapshot!
     await waitFor(() => {

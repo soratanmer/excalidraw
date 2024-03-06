@@ -240,9 +240,10 @@ const duplicateElements = (
   }
 
   // step (3)
-  const finalElements = finalElementsReversed.reverse();
-
-  syncMovedIndices(finalElements, arrayToMap([...oldElements, ...newElements]));
+  const finalElements = syncMovedIndices(
+    finalElementsReversed.reverse(),
+    arrayToMap(newElements),
+  );
 
   // ---------------------------------------------------------------------------
 

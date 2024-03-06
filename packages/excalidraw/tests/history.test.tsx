@@ -1,5 +1,10 @@
-import * as Renderer from "../renderer/renderScene";
-import { assertSelectedElements, render, togglePopover } from "./test-utils";
+import * as StaticScene from "../renderer/staticScene";
+import {
+  act,
+  assertSelectedElements,
+  render,
+  togglePopover,
+} from "./test-utils";
 import { Excalidraw } from "../index";
 import { Keyboard, Pointer, UI } from "./helpers/ui";
 import { API } from "./helpers/api";
@@ -43,7 +48,7 @@ const checkpoint = (name: string) => {
     );
 };
 
-const renderStaticScene = vi.spyOn(Renderer, "renderStaticScene");
+const renderStaticScene = vi.spyOn(StaticScene, "renderStaticScene");
 
 describe("history", () => {
   beforeEach(() => {
@@ -75,7 +80,7 @@ describe("history", () => {
     const undoAction = createUndoAction(h.history, h.store);
     const redoAction = createRedoAction(h.history, h.store);
     // noop
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
     expect(h.elements).toEqual([
       expect.objectContaining({ id: "A", isDeleted: false }),
     ]);
@@ -84,21 +89,21 @@ describe("history", () => {
       expect.objectContaining({ id: "A" }),
       expect.objectContaining({ id: rectangle.id }),
     ]);
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
     expect(h.elements).toEqual([
       expect.objectContaining({ id: "A", isDeleted: false }),
       expect.objectContaining({ id: rectangle.id, isDeleted: true }),
     ]);
 
     // noop
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
     expect(h.elements).toEqual([
       expect.objectContaining({ id: "A", isDeleted: false }),
       expect.objectContaining({ id: rectangle.id, isDeleted: true }),
     ]);
     expect(API.getUndoStack().length).toBe(0);
 
-    h.app.actionManager.executeAction(redoAction);
+    act(() => h.app.actionManager.executeAction(redoAction));
     expect(h.elements).toEqual([
       expect.objectContaining({ id: "A", isDeleted: false }),
       expect.objectContaining({ id: rectangle.id, isDeleted: false }),
@@ -151,7 +156,7 @@ describe("history", () => {
 
     const undoAction = createUndoAction(h.history, h.store);
     const redoAction = createRedoAction(h.history, h.store);
-    h.app.actionManager.executeAction(undoAction);
+    act(() => h.app.actionManager.executeAction(undoAction));
 
     expect(API.getSnapshot()).toEqual([
       expect.objectContaining({ id: "A", isDeleted: false }),
@@ -163,7 +168,7 @@ describe("history", () => {
     ]);
     expect(h.state.viewBackgroundColor).toBe("#FFF");
 
-    h.app.actionManager.executeAction(redoAction);
+    act(() => h.app.actionManager.executeAction(redoAction));
     expect(h.state.viewBackgroundColor).toBe("#000");
     expect(API.getSnapshot()).toEqual([
       expect.objectContaining({ id: "A", isDeleted: true }),
@@ -367,7 +372,7 @@ describe("history", () => {
     const rect2 = UI.createElement("rectangle", { x: 20, y: 20 });
     const rect3 = UI.createElement("rectangle", { x: 40, y: 40 });
 
-    h.app.actionManager.executeAction(actionSendBackward);
+    act(() => h.app.actionManager.executeAction(actionSendBackward));
 
     expect(API.getUndoStack().length).toBe(4);
     expect(API.getRedoStack().length).toBe(0);
@@ -398,7 +403,7 @@ describe("history", () => {
     expect(API.getRedoStack().length).toBe(0);
     assertSelectedElements([rect1, rect3]);
 
-    h.app.actionManager.executeAction(actionBringForward);
+    act(() => h.app.actionManager.executeAction(actionBringForward));
 
     expect(API.getUndoStack().length).toBe(7);
     expect(API.getRedoStack().length).toBe(0);
@@ -1002,7 +1007,8 @@ describe("history", () => {
       h.elements = [rect1, rect2, rect3];
 
       mouse.select(rect2);
-      h.app.actionManager.executeAction(actionSendToBack);
+
+      act(() => h.app.actionManager.executeAction(actionSendToBack));
 
       expect(API.getUndoStack().length).toBe(2);
       expect(API.getRedoStack().length).toBe(0);
@@ -1027,9 +1033,9 @@ describe("history", () => {
       expect(API.getRedoStack().length).toBe(1);
       assertSelectedElements([rect2]);
       expect(h.elements).toEqual([
+        expect.objectContaining({ id: rect2.id }),
         expect.objectContaining({ id: rect3.id }),
         expect.objectContaining({ id: rect1.id }),
-        expect.objectContaining({ id: rect2.id }),
       ]);
 
       Keyboard.redo();
@@ -1045,20 +1051,20 @@ describe("history", () => {
       // Simulate remote update
       excalidrawAPI.updateScene({
         elements: [
-          h.elements[2], // rect1
-          h.elements[0], // rect3
           h.elements[1], // rect2
+          h.elements[0], // rect3
+          h.elements[2], // rect1
         ],
       });
 
       Keyboard.undo();
       expect(API.getUndoStack().length).toBe(0);
-      expect(API.getRedoStack().length).toBe(2); // not we iterated two steps back!
+      expect(API.getRedoStack().length).toBe(2); // now we iterated two steps back!
       assertSelectedElements([]);
       expect(h.elements).toEqual([
-        expect.objectContaining({ id: rect1.id }),
-        expect.objectContaining({ id: rect3.id }),
         expect.objectContaining({ id: rect2.id }),
+        expect.objectContaining({ id: rect3.id }),
+        expect.objectContaining({ id: rect1.id }),
       ]);
 
       Keyboard.redo();
@@ -1076,9 +1082,9 @@ describe("history", () => {
       expect(API.getRedoStack().length).toBe(0);
       assertSelectedElements([rect2]);
       expect(h.elements).toEqual([
-        expect.objectContaining({ id: rect2.id }),
         expect.objectContaining({ id: rect1.id }),
         expect.objectContaining({ id: rect3.id }),
+        expect.objectContaining({ id: rect2.id }),
       ]);
     });
 

@@ -1,5 +1,5 @@
 import { AppStateChange, ElementsChange } from "./change";
-import { ExcalidrawElement } from "./element/types";
+import { SceneElementsMap } from "./element/types";
 import { Emitter } from "./emitter";
 import { Snapshot } from "./store";
 import { AppState } from "./types";
@@ -51,7 +51,7 @@ export class History {
   }
 
   public undo(
-    elements: Map<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     appState: AppState,
     snapshot: Readonly<Snapshot>,
   ) {
@@ -59,7 +59,7 @@ export class History {
   }
 
   public redo(
-    elements: Map<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     appState: AppState,
     snapshot: Readonly<Snapshot>,
   ) {
@@ -68,10 +68,10 @@ export class History {
 
   private perform(
     action: typeof this.undoOnce | typeof this.redoOnce,
-    elements: Map<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     appState: AppState,
     snapshot: Readonly<Snapshot>,
-  ): [Map<string, ExcalidrawElement>, AppState] | void {
+  ): [SceneElementsMap, AppState] | void {
     let historyEntry = action(elements);
 
     this.onHistoryChangeEmitter.trigger(
@@ -102,9 +102,7 @@ export class History {
     return [nextElements, nextAppState];
   }
 
-  private undoOnce(
-    elements: Map<string, ExcalidrawElement>,
-  ): HistoryEntry | null {
+  private undoOnce(elements: SceneElementsMap): HistoryEntry | null {
     if (!this.undoStack.length) {
       return null;
     }
@@ -121,9 +119,7 @@ export class History {
     return null;
   }
 
-  private redoOnce(
-    elements: Map<string, ExcalidrawElement>,
-  ): HistoryEntry | null {
+  private redoOnce(elements: SceneElementsMap): HistoryEntry | null {
     if (!this.redoStack.length) {
       return null;
     }
@@ -162,10 +158,10 @@ export class HistoryEntry {
   }
 
   public applyTo(
-    elements: Map<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     appState: AppState,
     snapshot: Readonly<Snapshot>,
-  ): [Map<string, ExcalidrawElement>, AppState, boolean] {
+  ): [SceneElementsMap, AppState, boolean] {
     const [nextElements, elementsContainVisibleChange] =
       this.elementsChange.applyTo(elements, snapshot.elements);
 
@@ -182,7 +178,7 @@ export class HistoryEntry {
    * Apply latest (remote) changes to the history entry, creates new instance of `HistoryEntry`.
    */
   public applyLatestChanges(
-    elements: Map<string, ExcalidrawElement>,
+    elements: SceneElementsMap,
     modifierOptions: "deleted" | "inserted",
   ): HistoryEntry {
     const updatedElementsChange = this.elementsChange.applyLatestChanges(

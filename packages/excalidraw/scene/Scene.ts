@@ -148,6 +148,10 @@ class Scene {
     return this.elements;
   }
 
+  getElementsMapIncludingDeleted() {
+    return this.elementsMap;
+  }
+
   getNonDeletedElements() {
     return this.nonDeletedElements;
   }

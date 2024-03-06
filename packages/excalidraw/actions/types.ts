@@ -1,5 +1,5 @@
 import React from "react";
-import { ExcalidrawElement } from "../element/types";
+import { ExcalidrawElement, OrderedExcalidrawElement } from "../element/types";
 import {
   AppClassProperties,
   AppState,
@@ -31,7 +31,7 @@ export type ActionResult =
   | false;
 
 type ActionFn = (
-  elements: readonly ExcalidrawElement[],
+  elements: readonly OrderedExcalidrawElement[],
   appState: Readonly<AppState>,
   formData: any,
   app: AppClassProperties,

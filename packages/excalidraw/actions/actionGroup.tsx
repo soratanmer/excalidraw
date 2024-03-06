@@ -17,7 +17,11 @@ import {
 import { getNonDeletedElements } from "../element";
 import { randomId } from "../random";
 import { ToolButton } from "../components/ToolButton";
-import { ExcalidrawElement, ExcalidrawTextElement } from "../element/types";
+import {
+  ExcalidrawElement,
+  ExcalidrawTextElement,
+  OrderedExcalidrawElement,
+} from "../element/types";
 import { AppClassProperties, AppState } from "../types";
 import { isBoundToContainer } from "../element/typeChecks";
 import {
@@ -133,19 +137,19 @@ export const actionGroup = register({
     // to the z order of the highest element in the layer stack
     const elementsInGroup = getElementsInGroup(nextElements, newGroupId);
     const lastElementInGroup = elementsInGroup[elementsInGroup.length - 1];
-    const lastGroupElementIndex = nextElements.lastIndexOf(lastElementInGroup);
+    const lastGroupElementIndex = nextElements.lastIndexOf(
+      lastElementInGroup as OrderedExcalidrawElement,
+    );
     const elementsAfterGroup = nextElements.slice(lastGroupElementIndex + 1);
     const elementsBeforeGroup = nextElements
       .slice(0, lastGroupElementIndex)
       .filter(
         (updatedElement) => !isElementInGroup(updatedElement, newGroupId),
       );
-    const reorderedElements = [
-      ...elementsBeforeGroup,
-      ...elementsInGroup,
-      ...elementsAfterGroup,
-    ];
-    syncMovedIndices(reorderedElements, arrayToMap(elementsInGroup));
+    const reorderedElements = syncMovedIndices(
+      [...elementsBeforeGroup, ...elementsInGroup, ...elementsAfterGroup],
+      arrayToMap(elementsInGroup),
+    );
 
     return {
       appState: {
