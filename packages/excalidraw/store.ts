@@ -21,11 +21,6 @@ const getObservedAppState = (appState: AppState): ObservedAppState => {
 /**
  * Store which captures the observed changes and emits them as `StoreIncrementEvent` events.
  *
- * For the future:
- * - Store should coordinate the changes and maintain its increments cohesive between different instances.
- * - Store increments should be kept as append-only events log, with additional metadata, such as the logical timestamp for conflict-free resolution of increments.
- * - Store flow should be bi-directional, not only listening and capturing changes, but mainly receiving increments as commands and applying them to the state.
- *
  * @experimental this interface is experimental and subject to change.
  */
 export interface IStore {
@@ -44,7 +39,7 @@ export interface IStore {
   shouldCaptureIncrement(): void;
 
   /**
-   * Capture changes to the @param elements and @param appState by calculating changes (based on a snapshot) and emitting resulting changes as a store increment.
+   * Capture changes to the `elements` and `appState` by calculating changes (based on a snapshot) and emitting resulting changes as a store increment.
    *
    * @emits StoreIncrementEvent
    */
@@ -59,10 +54,11 @@ export interface IStore {
   clear(): void;
 
   /**
-   * Filters out yet uncomitted local elements, which are part of in progress async actions, based on what we have in snapshot.
+   * Filters out yet uncomitted elements from `nextElements`, which are part of in-progress local async actions (ephemerals) and thus were not yet commited to the snapshot.
    *
-   * This is necessary on updates in which we receive reconcilled-like elements, already containing elements
-   * which were not yet captured by the store. Once we will be exchanging just store increments this will be deprecated.
+   * This is necessary in updates in which we receive reconciled elements, already containing elements which were not yet captured by the local store (i.e. collab).
+   *
+   * Once we will be exchanging just store increments for all ephemerals, this could be deprecated.
    */
   ignoreUncomittedElements(
     prevElements: Map<string, OrderedExcalidrawElement>,
@@ -303,10 +299,10 @@ export class Snapshot {
     const clonedElements = new Map();
 
     for (const [id, prevElement] of this.elements.entries()) {
-      // clone previous elements, never delete, in case nextElements would be just a subset of previous elements
+      // Clone previous elements, never delete, in case nextElements would be just a subset of previous elements
       // i.e. during collab, persist or whenenever isDeleted elements get cleared
       if (!nextElements.get(id)) {
-        // when we cannot find the prev element in the next elements, we mark it as deleted
+        // When we cannot find the prev element in the next elements, we mark it as deleted
         clonedElements.set(
           id,
           newElementWith(prevElement, { isDeleted: true }),

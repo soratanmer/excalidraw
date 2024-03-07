@@ -38,7 +38,7 @@ import {
  * - `deleted` is a set of all the previous (removed) values
  * - `inserted` is a set of all the next (added, updated) values
  *
- * Keeping it as pure object (without transient state, side-effects, etc.), so we don't have to instantiate it on load.
+ * Keeping it as pure object (without transient state, side-effects, etc.), so we won't have to instantiate it on load.
  */
 class Delta<T> {
   private constructor(
@@ -85,11 +85,10 @@ class Delta<T> {
     const inserted = {} as Partial<T>;
 
     // O(n^3) here, but it's not as bad as it looks:
-    // - we do this only on history recordings, not on every frame
-    // - we do this only on changed elements
-    // - we do shallow compare only on first level
+    // - we do this only on history recordings, not on every frame (not for ephemerals)
+    // - we do this only on previously detected changed elements
+    // - we do shallow compare only on the first level of properties (not going any deeper)
     // - # of element's properties is reasonably small
-    // - for expensive ops we could emit deltas on user actions directly
     for (const key of this.distinctKeysIterator(
       "full",
       prevObject,
@@ -257,6 +256,8 @@ interface Change<T> {
 
   /**
    * Applies the `Change` to the previous object.
+   *
+   * @returns a tuple of the next object `T` with applied change, and `boolean`, indicating whether the applied change resulted in a visible change.
    */
   applyTo(previous: Readonly<T>, ...options: unknown[]): [T, boolean];
 
@@ -553,12 +554,6 @@ type ElementPartial = Omit<ElementUpdate<OrderedExcalidrawElement>, "seed">;
 /**
  * Elements change is a low level primitive to capture a change between two sets of elements.
  * It does so by encapsulating forward and backward `Delta`s, which allow to travel in both directions.
- *
- * We could be smarter about the change in the future, ideas for improvements are:
- * - for memory, share the same delta instances between different deltas (flyweight-like)
- * - for serialization, compress the deltas into a tree-like structures with custom pointers or let one delta instance contain multiple element ids
- * - for performance, emit the changes directly by the user actions, then apply them from store into the state (no diffing!)
- * - for performance, add operations in addition to deltas, which increment (decrement) properties by given value (could be used i.e. for presence-like move)
  */
 export class ElementsChange implements Change<SceneElementsMap> {
   private constructor(
@@ -630,6 +625,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
       return ElementsChange.empty();
     }
 
+    // TODO: for memory, share the same delta instances between different deltas (flyweight-like)
     const added = new Map<string, Delta<ElementPartial>>();
     const removed = new Map<string, Delta<ElementPartial>>();
     const updated = new Map<string, Delta<ElementPartial>>();

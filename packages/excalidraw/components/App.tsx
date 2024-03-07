@@ -3697,7 +3697,7 @@ class App extends React.Component<AppProps, AppState> {
            * as it's essential for computing local changes after the async action is completed (i.e. not to include remote changes in the diff).
            *
            * This is also a breaking change for all local `updateScene` calls without set `commitToStore` to true,
-           * as it makes such updates impossible to undo (previously they were undone coincidentally with the switch to the whole previously captured snapshot by history).
+           * as it makes such updates impossible to undo (previously they were undone coincidentally with the switch to the whole snapshot captured by the history).
            *
            * WARN: be careful here as moving it elsewhere could break the history for remote client without noticing
            * - we need to find a way to test two concurrent client updates simultaneously, while having access to both stores & histories.

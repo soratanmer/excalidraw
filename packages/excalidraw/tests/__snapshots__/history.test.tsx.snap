@@ -379,7 +379,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 0,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": "id50",
   "customData": undefined,
@@ -606,7 +605,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 180,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": "id52",
   "customData": undefined,
@@ -824,7 +822,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 90,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": null,
   "customData": undefined,
@@ -886,7 +883,6 @@ History {
             "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
-              "baseline": 0,
               "boundElements": null,
               "containerId": "id54",
               "customData": undefined,
@@ -1095,7 +1091,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 0,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": "id56",
   "customData": undefined,
@@ -1136,7 +1131,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 0,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": null,
   "customData": undefined,
@@ -1199,7 +1193,6 @@ History {
             "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
-              "baseline": 0,
               "boundElements": null,
               "containerId": "id56",
               "customData": undefined,
@@ -1403,7 +1396,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 45,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": "id61",
   "customData": undefined,
@@ -1466,7 +1458,6 @@ History {
             "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
-              "baseline": 0,
               "boundElements": null,
               "containerId": "id61",
               "customData": undefined,
@@ -1670,7 +1661,6 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 90,
   "backgroundColor": "transparent",
-  "baseline": 0,
   "boundElements": null,
   "containerId": "id59",
   "customData": undefined,

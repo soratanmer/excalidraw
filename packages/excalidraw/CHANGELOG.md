@@ -15,6 +15,8 @@ Please add the latest change on the top under the correct section.
 
 ### Features
 
+- Support for multiplayer undo / redo [#7348](https://github.com/excalidraw/excalidraw/pull/7348).
+
 - Add `onPointerUp` prop [#7638](https://github.com/excalidraw/excalidraw/pull/7638).
 
 - Expose `getVisibleSceneBounds` helper to get scene bounds of visible canvas area. [#7450](https://github.com/excalidraw/excalidraw/pull/7450)
@@ -22,10 +24,6 @@ Please add the latest change on the top under the correct section.
 ### Fixes
 
 - Keep customData when converting to ExcalidrawElement. [#7656](https://github.com/excalidraw/excalidraw/pull/7656)
-
-### Features
-
-- Support for multiplayer undo / redo [#7348](https://github.com/excalidraw/excalidraw/pull/7348).
 
 ### Breaking Changes
 
