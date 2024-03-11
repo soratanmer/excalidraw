@@ -1,4 +1,5 @@
 import { ENV } from "./constants";
+import { LinearElementEditor } from "./element/linearElementEditor";
 import {
   ElementUpdate,
   mutateElement,
@@ -11,12 +12,15 @@ import {
 import { hasBoundTextElement, isBoundToContainer } from "./element/typeChecks";
 import {
   BoundElement,
+  ExcalidrawLinearElement,
   ExcalidrawTextElement,
+  NonDeleted,
   Ordered,
   OrderedExcalidrawElement,
   SceneElementsMap,
 } from "./element/types";
 import { orderByFractionalIndex, syncMovedIndices } from "./fractionalIndex";
+import { getObservedAppState } from "./store";
 import {
   AppState,
   ObservedAppState,
@@ -305,6 +309,8 @@ export class AppStateChange implements Change<AppState> {
     const {
       selectedElementIds: addedSelectedElementIds = {},
       selectedGroupIds: addedSelectedGroupIds = {},
+      selectedLinearElementId,
+      editingLinearElementId,
       ...directlyApplicablePartial
     } = this.delta.inserted;
 
@@ -320,11 +326,37 @@ export class AppStateChange implements Change<AppState> {
       removedSelectedGroupIds,
     );
 
+    const selectedLinearElement =
+      selectedLinearElementId && elements.has(selectedLinearElementId)
+        ? new LinearElementEditor(
+            elements.get(
+              selectedLinearElementId,
+            ) as NonDeleted<ExcalidrawLinearElement>,
+          )
+        : null;
+
+    const editingLinearElement =
+      editingLinearElementId && elements.has(editingLinearElementId)
+        ? new LinearElementEditor(
+            elements.get(
+              editingLinearElementId,
+            ) as NonDeleted<ExcalidrawLinearElement>,
+          )
+        : null;
+
     const nextAppState = {
       ...appState,
       ...directlyApplicablePartial,
       selectedElementIds: mergedSelectedElementIds,
       selectedGroupIds: mergedSelectedGroupIds,
+      selectedLinearElement:
+        typeof selectedLinearElementId !== "undefined"
+          ? selectedLinearElement // element was either inserted or deleted
+          : appState.selectedLinearElement, // otherwise assign what we had before
+      editingLinearElement:
+        typeof editingLinearElementId !== "undefined"
+          ? editingLinearElement // element was either inserted or deleted
+          : appState.editingLinearElement, // otherwise assign what we had before
     };
 
     const constainsVisibleChanges = this.filterInvisibleChanges(
@@ -401,13 +433,16 @@ export class AppStateChange implements Change<AppState> {
    */
   private filterInvisibleChanges(
     prevAppState: AppState,
-    nextAppState: ObservedAppState,
+    nextAppState: AppState,
     nextElements: SceneElementsMap,
   ): boolean {
+    const prevObservedAppState = getObservedAppState(prevAppState);
+    const nextObservedAppState = getObservedAppState(nextAppState);
+
     const visibleDifferenceFlag = { value: false };
     const containsStandaloneDifference = Delta.isRightDifferent(
-      prevAppState,
-      AppStateChange.stripElementsProps(nextAppState),
+      AppStateChange.stripElementsProps(prevObservedAppState),
+      AppStateChange.stripElementsProps(nextObservedAppState),
     );
 
     if (containsStandaloneDifference) {
@@ -416,8 +451,8 @@ export class AppStateChange implements Change<AppState> {
     }
 
     const containsElementsDifference = Delta.isRightDifferent(
-      prevAppState,
-      AppStateChange.stripStandaloneProps(nextAppState),
+      AppStateChange.stripStandaloneProps(prevObservedAppState),
+      AppStateChange.stripStandaloneProps(nextObservedAppState),
     );
 
     if (!containsStandaloneDifference && !containsElementsDifference) {
@@ -428,8 +463,8 @@ export class AppStateChange implements Change<AppState> {
     // We need to handle elements differences separately,
     // as they could be related to deleted elements and/or they could on their own result in no visible action
     const changedDeltaKeys = Delta.getRightDifferences(
-      prevAppState,
-      AppStateChange.stripStandaloneProps(nextAppState),
+      AppStateChange.stripStandaloneProps(prevObservedAppState),
+      AppStateChange.stripStandaloneProps(nextObservedAppState),
     ) as Array<keyof ObservedElementsAppState>;
 
     // Check whether delta properties are related to the existing non-deleted elements
@@ -443,9 +478,15 @@ export class AppStateChange implements Change<AppState> {
               visibleDifferenceFlag,
             );
           break;
-        case "editingLinearElement":
-          nextAppState[key] = AppStateChange.filterLinearElement(
-            nextAppState[key],
+        case "selectedLinearElementId":
+        case "editingLinearElementId":
+          const appStateKey =
+            key === "selectedLinearElementId"
+              ? "selectedLinearElement"
+              : "editingLinearElement";
+
+          nextAppState[appStateKey] = AppStateChange.filterLinearElement(
+            nextAppState[appStateKey],
             nextElements,
             visibleDifferenceFlag,
           );
@@ -474,7 +515,7 @@ export class AppStateChange implements Change<AppState> {
   }
 
   private static filterSelectedElements(
-    selectedElementIds: ObservedElementsAppState["selectedElementIds"],
+    selectedElementIds: AppState["selectedElementIds"],
     elements: SceneElementsMap,
     visibleDifferenceFlag: { value: boolean },
   ) {
@@ -495,7 +536,9 @@ export class AppStateChange implements Change<AppState> {
   }
 
   private static filterLinearElement(
-    linearElement: ObservedElementsAppState["editingLinearElement"],
+    linearElement:
+      | AppState["editingLinearElement"]
+      | AppState["selectedLinearElement"],
     elements: SceneElementsMap,
     visibleDifferenceFlag: { value: boolean },
   ) {
@@ -525,7 +568,8 @@ export class AppStateChange implements Change<AppState> {
       editingGroupId,
       selectedGroupIds,
       selectedElementIds,
-      editingLinearElement,
+      editingLinearElementId,
+      selectedLinearElementId,
       ...standaloneProps
     } = delta as ObservedAppState;
 
@@ -553,7 +597,7 @@ type ElementPartial = Omit<ElementUpdate<OrderedExcalidrawElement>, "seed">;
 
 /**
  * Elements change is a low level primitive to capture a change between two sets of elements.
- * It does so by encapsulating forward and backward `Delta`s, which allow to travel in both directions.
+ * It does so by encapsulating forward and backward `Delta`s, allowing to time-travel in both directions.
  */
 export class ElementsChange implements Change<SceneElementsMap> {
   private constructor(

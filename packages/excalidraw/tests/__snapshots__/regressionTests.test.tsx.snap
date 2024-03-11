@@ -6087,11 +6087,13 @@ History {
             "selectedElementIds": {
               "id2": true,
             },
+            "selectedLinearElementId": null,
           },
           "inserted": {
             "selectedElementIds": {
               "id3": true,
             },
+            "selectedLinearElementId": "id3",
           },
         },
       },
@@ -6155,11 +6157,13 @@ History {
             "selectedElementIds": {
               "id3": true,
             },
+            "selectedLinearElementId": "id3",
           },
           "inserted": {
             "selectedElementIds": {
               "id4": true,
             },
+            "selectedLinearElementId": "id4",
           },
         },
       },
@@ -6223,11 +6227,13 @@ History {
             "selectedElementIds": {
               "id4": true,
             },
+            "selectedLinearElementId": "id4",
           },
           "inserted": {
             "selectedElementIds": {
               "id5": true,
             },
+            "selectedLinearElementId": null,
           },
         },
       },
@@ -6347,14 +6353,33 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
+            "selectedLinearElementId": null,
+          },
+          "inserted": {
+            "selectedLinearElementId": "id5",
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
             "selectedElementIds": {
               "id5": true,
             },
+            "selectedLinearElementId": "id5",
           },
           "inserted": {
             "selectedElementIds": {
               "id6": true,
             },
+            "selectedLinearElementId": null,
           },
         },
       },
@@ -6474,12 +6499,31 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
+            "selectedLinearElementId": null,
+          },
+          "inserted": {
+            "selectedLinearElementId": "id6",
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
             "selectedElementIds": {
               "id6": true,
             },
+            "selectedLinearElementId": "id6",
           },
           "inserted": {
             "selectedElementIds": {},
+            "selectedLinearElementId": null,
           },
         },
       },
@@ -8229,11 +8273,13 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {},
+            "selectedLinearElementId": null,
           },
           "inserted": {
             "selectedElementIds": {
               "id0": true,
             },
+            "selectedLinearElementId": "id0",
           },
         },
       },
@@ -8436,11 +8482,13 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {},
+            "selectedLinearElementId": null,
           },
           "inserted": {
             "selectedElementIds": {
               "id0": true,
             },
+            "selectedLinearElementId": "id0",
           },
         },
       },
@@ -8826,11 +8874,13 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {},
+            "selectedLinearElementId": null,
           },
           "inserted": {
             "selectedElementIds": {
               "id0": true,
             },
+            "selectedLinearElementId": "id0",
           },
         },
       },
@@ -9202,11 +9252,13 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {},
+            "selectedLinearElementId": null,
           },
           "inserted": {
             "selectedElementIds": {
               "id0": true,
             },
+            "selectedLinearElementId": "id0",
           },
         },
       },
@@ -13579,6 +13631,23 @@ History {
     "subscribers": [],
   },
   "redoStack": [
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedLinearElementId": null,
+          },
+          "inserted": {
+            "selectedLinearElementId": "id2",
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
     HistoryEntry {
       "appStateChange": AppStateChange {
         "delta": Delta {

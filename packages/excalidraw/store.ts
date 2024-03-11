@@ -7,14 +7,15 @@ import { Emitter } from "./emitter";
 import { AppState, ObservedAppState } from "./types";
 import { isShallowEqual } from "./utils";
 
-const getObservedAppState = (appState: AppState): ObservedAppState => {
+export const getObservedAppState = (appState: AppState): ObservedAppState => {
   return {
     name: appState.name,
     editingGroupId: appState.editingGroupId,
     viewBackgroundColor: appState.viewBackgroundColor,
     selectedElementIds: appState.selectedElementIds,
     selectedGroupIds: appState.selectedGroupIds,
-    editingLinearElement: appState.editingLinearElement,
+    editingLinearElementId: appState.editingLinearElement?.elementId || null,
+    selectedLinearElementId: appState.selectedLinearElement?.elementId || null,
   };
 };
 

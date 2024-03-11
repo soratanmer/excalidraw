@@ -59,6 +59,8 @@ export const actionFinalize = register({
       }
     }
 
+    let newElements = elements;
+
     const pendingImageElement =
       appState.pendingImageElementId &&
       scene.getElement(appState.pendingImageElementId);
@@ -92,6 +94,15 @@ export const actionFinalize = register({
             points: multiPointElement.points.slice(0, -1),
           });
         }
+      }
+
+      if (isInvisiblySmallElement(multiPointElement)) {
+        // TODO: not a great idea here as it could be recorded by the store,
+        // so the invisible element could be restored by the undo/redo, which is not what we want
+        // however for cases like dragCreate we are not recording, so it serves the purpose
+        newElements = newElements.filter(
+          (el) => el.id !== multiPointElement.id,
+        );
       }
 
       // If the multi point line closes the loop,
@@ -158,6 +169,7 @@ export const actionFinalize = register({
     }
 
     return {
+      elements: newElements,
       appState: {
         ...appState,
         cursorButton: "up",
@@ -189,10 +201,7 @@ export const actionFinalize = register({
             : appState.selectedLinearElement,
         pendingImageElementId: null,
       },
-      storeAction:
-        appState.activeTool.type === "freedraw"
-          ? StoreAction.CAPTURE
-          : StoreAction.NONE,
+      storeAction: StoreAction.CAPTURE,
     };
   },
   keyTest: (event, appState) =>
