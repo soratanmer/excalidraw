@@ -74,32 +74,35 @@ export class History {
   ): [SceneElementsMap, AppState] | void {
     let historyEntry = action(elements);
 
-    this.onHistoryChangeEmitter.trigger(
-      new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
-    );
-
-    // Nothing to undo / redo
-    if (historyEntry === null) {
-      return;
-    }
-
-    let nextElements = elements;
-    let nextAppState = appState;
-    let containsVisibleChange = false;
-
-    // Iterate through the history entries in case they result in no visible changes
-    while (historyEntry) {
-      [nextElements, nextAppState, containsVisibleChange] =
-        historyEntry.applyTo(nextElements, nextAppState, snapshot);
-
-      if (containsVisibleChange) {
-        break;
+    try {
+      // Nothing to undo / redo
+      if (historyEntry === null) {
+        return;
       }
 
-      historyEntry = action(elements);
-    }
+      let nextElements = elements;
+      let nextAppState = appState;
+      let containsVisibleChange = false;
 
-    return [nextElements, nextAppState];
+      // Iterate through the history entries in case they result in no visible changes
+      while (historyEntry) {
+        [nextElements, nextAppState, containsVisibleChange] =
+          historyEntry.applyTo(nextElements, nextAppState, snapshot);
+
+        if (containsVisibleChange) {
+          break;
+        }
+
+        historyEntry = action(elements);
+      }
+
+      return [nextElements, nextAppState];
+    } finally {
+      // Trigger the history change event before returning completely
+      this.onHistoryChangeEmitter.trigger(
+        new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
+      );
+    }
   }
 
   private undoOnce(elements: SceneElementsMap): HistoryEntry | null {

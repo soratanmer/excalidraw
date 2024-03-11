@@ -53,12 +53,11 @@ export const actionFinalize = register({
             cursorButton: "up",
             editingLinearElement: null,
           },
-          storeAction: StoreAction.CAPTURE,
+          // update the store snapshot, so that invisible elements are not captured by the store
+          storeAction: StoreAction.UPDATE,
         };
       }
     }
-
-    let newElements = elements;
 
     const pendingImageElement =
       appState.pendingImageElementId &&
@@ -93,11 +92,6 @@ export const actionFinalize = register({
             points: multiPointElement.points.slice(0, -1),
           });
         }
-      }
-      if (isInvisiblySmallElement(multiPointElement)) {
-        newElements = newElements.filter(
-          (el) => el.id !== multiPointElement.id,
-        );
       }
 
       // If the multi point line closes the loop,
@@ -164,7 +158,6 @@ export const actionFinalize = register({
     }
 
     return {
-      elements: newElements,
       appState: {
         ...appState,
         cursorButton: "up",

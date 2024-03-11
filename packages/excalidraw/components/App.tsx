@@ -7816,14 +7816,16 @@ class App extends React.Component<AppProps, AppState> {
         isInvisiblySmallElement(draggingElement)
       ) {
         // remove invisible element which was added in onPointerDown
-        this.scene.replaceAllElements(
-          this.scene
+        // update the store snapshot, so that invisible elements are not captured by the store
+        this.updateScene({
+          elements: this.scene
             .getElementsIncludingDeleted()
             .filter((el) => el.id !== draggingElement.id),
-        );
-        this.setState({
-          draggingElement: null,
+          appState: {
+            draggingElement: null,
+          },
         });
+
         return;
       }
 
@@ -7989,11 +7991,12 @@ class App extends React.Component<AppProps, AppState> {
       }
 
       if (resizingElement && isInvisiblySmallElement(resizingElement)) {
-        this.scene.replaceAllElements(
-          this.scene
+        // update the store snapshot, so that invisible elements are not captured by the store
+        this.updateScene({
+          elements: this.scene
             .getElementsIncludingDeleted()
             .filter((el) => el.id !== resizingElement.id),
-        );
+        });
       }
 
       // handle frame membership for resizing frames and/or selected elements

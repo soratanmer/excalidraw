@@ -16,7 +16,7 @@ import {
   OrderedExcalidrawElement,
   SceneElementsMap,
 } from "./element/types";
-import { orderByFractionalIndex } from "./fractionalIndex";
+import { orderByFractionalIndex, syncMovedIndices } from "./fractionalIndex";
 import {
   AppState,
   ObservedAppState,
@@ -810,10 +810,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
       containsVisibleDifference: false,
       containsZindexDifference: false,
     };
-
-    const applyDelta = ElementsChange.createApplier(elements, flags);
-
     const changes = new Map<string, OrderedExcalidrawElement>();
+    const applyDelta = ElementsChange.createApplier(elements, flags);
 
     function setElements(
       ...changedElements: (OrderedExcalidrawElement | undefined)[]
@@ -826,8 +824,34 @@ export class ElementsChange implements Change<SceneElementsMap> {
       }
     }
 
+    function getElement(id: string, partial: ElementPartial) {
+      let element = elements.get(id);
+
+      if (!element) {
+        // Always fallback to the local snapshot, in cases when we cannot find the element in the elements array
+        element = snapshot.get(id);
+
+        if (element) {
+          // As the element was brought from the snapshot, it automatically results in possible zindex difference
+          // TODO_UNDO: add test case
+          flags.containsZindexDifference = true;
+
+          // As the element was force deleted, we need to check if adding it back results in a visible change
+          if (
+            partial.isDeleted === false ||
+            (partial.isDeleted !== true && element.isDeleted === false)
+          ) {
+            // TODO_UNDO: add test case
+            flags.containsVisibleDifference = true;
+          }
+        }
+      }
+
+      return element;
+    }
+
     for (const [id, delta] of this.removed.entries()) {
-      const existingElement = elements.get(id) ?? snapshot.get(id);
+      const existingElement = getElement(id, delta.inserted);
 
       if (existingElement) {
         const removedElement = applyDelta(existingElement, delta);
@@ -846,7 +870,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     }
 
     for (const [id, delta] of this.updated.entries()) {
-      const existingElement = elements.get(id) ?? snapshot.get(id);
+      const existingElement = getElement(id, delta.inserted);
 
       if (existingElement) {
         const updatedElement = applyDelta(existingElement, delta);
@@ -856,8 +880,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     }
 
     for (const [id, delta] of this.added.entries()) {
-      // Always having the local snapshot as a backup fallback, in cases when we cannot find the element in the elements array
-      const existingElement = elements.get(id) ?? snapshot.get(id);
+      const existingElement = getElement(id, delta.inserted);
 
       if (existingElement) {
         const addedElement = applyDelta(existingElement, delta);
@@ -876,8 +899,12 @@ export class ElementsChange implements Change<SceneElementsMap> {
       }
     }
 
-    ElementsChange.redrawTextBoundingBoxes(changes, elements);
-    const nextElements = ElementsChange.reorderElements(elements, flags);
+    ElementsChange.redrawTextBoundingBoxes(elements, changes);
+    const nextElements = ElementsChange.reorderElements(
+      elements,
+      changes,
+      flags,
+    );
 
     return [nextElements, flags.containsVisibleDifference];
   }
@@ -1123,8 +1150,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
   }
 
   private static redrawTextBoundingBoxes(
-    changed: ReadonlyMap<string, OrderedExcalidrawElement>,
     elements: SceneElementsMap,
+    changed: ReadonlyMap<string, OrderedExcalidrawElement>,
   ) {
     const boxesToRedraw = new Map<
       string,
@@ -1172,6 +1199,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
 
   private static reorderElements(
     elements: SceneElementsMap,
+    changed: Map<string, OrderedExcalidrawElement>,
     flags: {
       containsVisibleDifference: boolean;
       containsZindexDifference: boolean;
@@ -1192,7 +1220,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
       flags.containsVisibleDifference = true;
     }
 
-    return arrayToMap(reordered) as typeof elements;
+    // In case elements were force deleted or are in general missing in the current scene, let's synchronize their invalid indices
+    return arrayToMap(syncMovedIndices(reordered, changed)) as typeof elements;
   }
 
   /**
