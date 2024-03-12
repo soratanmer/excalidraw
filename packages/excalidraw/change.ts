@@ -480,6 +480,7 @@ export class AppStateChange implements Change<AppState> {
           break;
         case "selectedLinearElementId":
         case "editingLinearElementId":
+          // Map increment key back into the appState key
           const appStateKey =
             key === "selectedLinearElementId"
               ? "selectedLinearElement"
@@ -493,12 +494,12 @@ export class AppStateChange implements Change<AppState> {
           break;
         case "editingGroupId":
         case "selectedGroupIds":
-          // Currently we don't have an index of elements by groupIds, which means that
+          // TODO: Currently we don't have an index of elements by groupIds, which means that
           // the calculation for getting the visible elements based on the groupIds stored in delta
           // is not worth performing - due to perf. and dev. complexity.
           //
           // Therefore we are accepting in these cases empty undos / redos, which should be pretty rare:
-          // - only when one of these (or both) are in delta and the are no non deleted elements containing these group ids
+          // - only when one of these (or both) are in delta and there are no non deleted elements containing these group ids
           visibleDifferenceFlag.value = true;
           break;
         default: {

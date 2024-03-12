@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Action, ActionResult, StoreAction } from "./types";
 import { UndoIcon, RedoIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
@@ -10,6 +9,7 @@ import { arrayToMap } from "../utils";
 import { isWindows } from "../constants";
 import { SceneElementsMap } from "../element/types";
 import { IStore } from "../store";
+import { useEmitter } from "../hooks/useEmitter";
 
 const writeData = (
   appState: Readonly<AppState>,
@@ -40,25 +40,6 @@ const writeData = (
   return { storeAction: StoreAction.NONE };
 };
 
-const useEmitter = (emitter: History["onHistoryChangeEmitter"]) => {
-  const [event, setEvent] = useState<HistoryChangedEvent>({
-    isUndoStackEmpty: true,
-    isRedoStackEmpty: true,
-  });
-
-  useEffect(() => {
-    const unsubscribe = emitter.on((historyChangedEvent) => {
-      setEvent(historyChangedEvent);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [emitter]);
-
-  return event;
-};
-
 type ActionCreator = (history: History, store: IStore) => Action;
 
 export const createUndoAction: ActionCreator = (history, store) => ({
@@ -77,7 +58,10 @@ export const createUndoAction: ActionCreator = (history, store) => ({
     event.key.toLowerCase() === KEYS.Z &&
     !event.shiftKey,
   PanelComponent: ({ updateData, data }) => {
-    const { isUndoStackEmpty } = useEmitter(history.onHistoryChangeEmitter);
+    const { isUndoStackEmpty } = useEmitter<HistoryChangedEvent>(
+      history.onHistoryChangedEmitter,
+      new HistoryChangedEvent(),
+    );
 
     return (
       <ToolButton
@@ -109,7 +93,10 @@ export const createRedoAction: ActionCreator = (history, store) => ({
       event.key.toLowerCase() === KEYS.Z) ||
     (isWindows && event.ctrlKey && !event.shiftKey && event.key === KEYS.Y),
   PanelComponent: ({ updateData, data }) => {
-    const { isRedoStackEmpty } = useEmitter(history.onHistoryChangeEmitter);
+    const { isRedoStackEmpty } = useEmitter(
+      history.onHistoryChangedEmitter,
+      new HistoryChangedEvent(),
+    );
 
     return (
       <ToolButton

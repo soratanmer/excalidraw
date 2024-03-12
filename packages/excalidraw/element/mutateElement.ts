@@ -33,7 +33,6 @@ export const mutateElement = <TElement extends Mutable<ExcalidrawElement>>(
 
   for (const key in updates) {
     const value = (updates as any)[key];
-    // We might want to come up for a different default value for containerId, since unbound is equal to "undefined"
     if (typeof value !== "undefined") {
       if (
         (element as any)[key] === value &&

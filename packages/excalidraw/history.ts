@@ -6,13 +6,15 @@ import { AppState } from "./types";
 
 export class HistoryChangedEvent {
   constructor(
-    public readonly isUndoStackEmpty: boolean,
-    public readonly isRedoStackEmpty: boolean,
+    public readonly isUndoStackEmpty: boolean = true,
+    public readonly isRedoStackEmpty: boolean = true,
   ) {}
 }
 
 export class History {
-  public readonly onHistoryChangeEmitter = new Emitter<[HistoryChangedEvent]>();
+  public readonly onHistoryChangedEmitter = new Emitter<
+    [HistoryChangedEvent]
+  >();
 
   private readonly undoStack: HistoryEntry[] = [];
   private readonly redoStack: HistoryEntry[] = [];
@@ -44,7 +46,7 @@ export class History {
 
       // As a new entry was pushed, we invalidate the redo stack
       this.redoStack.length = 0;
-      this.onHistoryChangeEmitter.trigger(
+      this.onHistoryChangedEmitter.trigger(
         new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
       );
     }
@@ -99,7 +101,7 @@ export class History {
       return [nextElements, nextAppState];
     } finally {
       // Trigger the history change event before returning completely
-      this.onHistoryChangeEmitter.trigger(
+      this.onHistoryChangedEmitter.trigger(
         new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
       );
     }
