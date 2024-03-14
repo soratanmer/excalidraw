@@ -45,6 +45,13 @@ import {
  * - `deleted` is a set of all the previous (removed) values
  * - `inserted` is a set of all the next (added, updated) values
  *
+ * In addition, we have two forms of representing reference values:
+ * - by default, `deleted` & `inserted` contains all the properties, even if only one property has changed
+ *  - i.e. check text element `points` prop,  when applied, it will override all the existing points
+ * - to granularly resolve conflicts on the level of individual properties, `postProcess` could be used to extract only changed properties
+ *  - i.e. check element's `groupIds` prop, when applied, it will be merged with existing `groupIds
+ * - related reasoning https://github.com/excalidraw/excalidraw/pull/7348#discussion_r1521718445
+ *
  * Keeping it as pure object (without transient state, side-effects, etc.), so we won't have to instantiate it on load.
  */
 class Delta<T> {
@@ -678,7 +685,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     const removed = new Map<string, Delta<ElementPartial>>();
     const updated = new Map<string, Delta<ElementPartial>>();
 
-    // This might be needed only in same edge cases, like during collab, when `isDeleted` elements get removed
+    // This might be needed only in same edge cases, like during collab, when `isDeleted` elements get removed or when we (un)intentionally remove the elements
     for (const prevElement of prevElements.values()) {
       const nextElement = nextElements.get(prevElement.id);
 
@@ -1013,7 +1020,6 @@ export class ElementsChange implements Change<SceneElementsMap> {
       if (!element) {
         // Always fallback to the local snapshot, in cases when we cannot find the element in the elements array
         element = snapshot.get(id);
-
         if (element) {
           // As the element was brought from the snapshot, it automatically results in possible zindex difference
           flags.containsZindexDifference = true;
@@ -1030,37 +1036,6 @@ export class ElementsChange implements Change<SceneElementsMap> {
 
       return element;
     };
-
-  /**
-   * Note: performs mutation, which we might want to refactor away, not to end up in an inconsistent state.
-   */
-  private static unbindExistingTextElements(
-    boundElements: readonly BoundElement[],
-    elements: SceneElementsMap,
-  ): readonly BoundElement[] | null {
-    const boundTextElements = boundElements.filter((x) => x.type === "text");
-
-    for (const { id } of boundTextElements) {
-      const element = elements.get(id);
-
-      if (element) {
-        mutateElement(
-          element as ExcalidrawTextElement,
-          {
-            isDeleted: true,
-            containerId: null,
-          },
-          false,
-        );
-      }
-    }
-
-    const nextBoundTextElements = boundElements.filter(
-      (x) => x.type !== "text",
-    );
-
-    return nextBoundTextElements.length ? nextBoundTextElements : null;
-  }
 
   /**
    * Check for visible changes regardless of whether they were removed, added or updated.
@@ -1088,6 +1063,51 @@ export class ElementsChange implements Change<SceneElementsMap> {
     return Delta.isRightDifferent(element, partial);
   }
 
+  /**
+   * Precedes `fixTextBindings` by removing existing bound text element when adding a new one through history, so we won't end up with multiple.
+   *
+   * Note: performs mutation, which we might want to refactor away, not to end up in an inconsistent state.
+   */
+  private static unbindExistingTextElements(
+    boundElements: readonly BoundElement[],
+    elements: SceneElementsMap,
+  ): readonly BoundElement[] | null {
+    const boundTextElements = boundElements.filter((x) => x.type === "text");
+
+    for (const { id } of boundTextElements) {
+      const element = elements.get(id);
+
+      if (element) {
+        mutateElement(
+          element as ExcalidrawTextElement,
+          {
+            isDeleted: true,
+            containerId: null,
+          },
+          false,
+        );
+      }
+    }
+
+    // TODO: consider separating bound text into a separate property, so we would't have to do this
+    // https://github.com/excalidraw/excalidraw/pull/7348#discussion_r1523123549
+    const nextBoundTextElements = boundElements.filter(
+      (x) => x.type !== "text",
+    );
+
+    return nextBoundTextElements.length ? nextBoundTextElements : null;
+  }
+
+  /**
+   * Fixing text bindings so we won't end up in an incosistent state after applying changes.
+   *
+   * The logic is similar to one `fixBindingsAfterDeletion`, `repairBoundElement` and `repairContainerElement`, but serves a different purpose.
+   * While the above functions are designed to ensure consistent state during restore, these are designed to resolve conflicts in the least intrusive way during concurrent updates.
+   * For now we are fixing only text bindings, which would otherwise cause rendering issues in some concurrent cases.
+   * - check the test suite `conflicts in bound text elements and containers` for the specific cases
+   *
+   * It's possible that in the future the conflict resolution will diverge even more, or contrarily get unified with `restore` logic.
+   */
   private static fixTextBindings(
     elements: SceneElementsMap,
     changed: Map<string, ExcalidrawElement>,

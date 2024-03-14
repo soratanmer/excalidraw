@@ -195,6 +195,7 @@ export type ObservedElementsAppState = {
   editingGroupId: AppState["editingGroupId"];
   selectedElementIds: AppState["selectedElementIds"];
   selectedGroupIds: AppState["selectedGroupIds"];
+  // TODO: re-check whether it makes sense to store the whole `LinearElementEditor` instance state as part the appState
   // Avoiding storing whole instance, as it could lead into state incosistencies, empty undos/redos and etc.
   editingLinearElementId: LinearElementEditor["elementId"] | null;
   // Right now it's coupled to `editingLinearElement`, ideally it should not be really needed as we already have selectedElementIds & editingLinearElementId

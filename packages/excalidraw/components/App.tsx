@@ -3704,6 +3704,7 @@ class App extends React.Component<AppProps, AppState> {
            */
           this.store.shouldUpdateSnapshot();
 
+          // TODO: deprecate once exchanging just store increments between clients
           nextCommittedElements = this.store.ignoreUncomittedElements(
             arrayToMap(prevElements),
             arrayToMap(nextElements),
