@@ -790,11 +790,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
   }
 
   /**
-   * Update only `updated` delta/s based on the existing elements.
-   * In comparison, `added` and `removed` deltas are not updated as it would cause our invariants to break.
-   *
-   * Also, i.e. not updating `added` deltas allow the element author to always restore his
-   * remotely deleted element/s through a series of undos & redos.
+   * Update delta/s based on the existing elements.
    *
    * @param elements current elements
    * @param modifierOptions defines which of the delta (`deleted` or `inserted`) will be updated
@@ -812,11 +808,13 @@ export class ElementsChange implements Change<SceneElementsMap> {
           if (
             key === "boundElements" ||
             key === "groupIds" ||
-            key === "customData"
+            key === "customData" ||
+            key === "isDeleted"
           ) {
             // It doesn't make sense to update the above props since:
             // - `boundElements` and `groupIds` are reference values which are represented just as removed/added changes in the delta
             // - `customData` can be anything
+            // - `isDeleted` would break the invariants
             latestPartial[key] = partial[key];
           } else {
             latestPartial[key] = element[key];
@@ -852,9 +850,11 @@ export class ElementsChange implements Change<SceneElementsMap> {
       return modifiedDeltas;
     };
 
+    const added = applyLatestChangesInternal(this.added);
+    const removed = applyLatestChangesInternal(this.removed);
     const updated = applyLatestChangesInternal(this.updated);
 
-    return ElementsChange.create(this.added, this.removed, updated);
+    return ElementsChange.create(added, removed, updated);
   }
 
   public applyTo(

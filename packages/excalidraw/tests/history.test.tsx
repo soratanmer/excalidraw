@@ -564,7 +564,7 @@ describe("history", () => {
     });
 
     // https://www.figma.com/blog/how-figmas-multiplayer-technology-works/#implementing-undo
-    // This is due to the fact that updated deltas are updated in `applyLatestChanges`.
+    // This is due to the fact that deltas are updated in `applyLatestChanges`.
     it("should update history entries after remote changes on the same properties", async () => {
       UI.createElement("rectangle", { x: 10 });
       togglePopover("Background");
@@ -625,7 +625,7 @@ describe("history", () => {
       ]);
     });
 
-    // This is due to the fact that added deltas don't get updated in `applyLatestChanges`.
+    // This is due to the fact that `isDeleted` prop doesn't get updated in `applyLatestChanges`.
     it("should allow the element author to restore his remotely deleted element", async () => {
       UI.createElement("rectangle", { x: 10 });
       togglePopover("Background");
@@ -671,24 +671,14 @@ describe("history", () => {
       expect(API.getRedoStack().length).toBe(1);
       expect(h.elements).toEqual([
         expect.objectContaining({
-          backgroundColor: transparent,
           isDeleted: false, // ...and we have the element back!
-        }),
-      ]);
-
-      Keyboard.redo();
-      expect(API.getUndoStack().length).toBe(2);
-      expect(API.getRedoStack().length).toBe(0);
-      expect(h.elements).toEqual([
-        expect.objectContaining({
-          backgroundColor: yellow, // ..now even with the latest color
-          isDeleted: false,
+          backgroundColor: yellow, // ..even with the latest color
         }),
       ]);
     });
 
-    // This is due to the fact that removed deltas don't get updated in `applyLatestChanges`.
-    it("should allow the element author to restore the element he deleted back to the state at the time of removal", async () => {
+    // This is due to the fact that `isDeleted` prop doesn't get updated in `applyLatestChanges`.
+    it("should allow the element author to restore the element he deleted back to the latest state", async () => {
       UI.createElement("rectangle", { x: 10 });
       Keyboard.keyDown(KEYS.DELETE);
 
@@ -746,20 +736,18 @@ describe("history", () => {
       expect(API.getRedoStack().length).toBe(1);
       expect(h.elements).toEqual([
         expect.objectContaining({
-          backgroundColor: transparent,
+          backgroundColor: yellow,
           isDeleted: false,
         }),
       ]);
 
-      // We do not expect our `backgroundColor` to be updated into `yellow`,
-      // to allow to get to the same point the element was at the time of the removal.
       Keyboard.redo();
-      expect(API.getSelectedElements()).toEqual([]);
+      expect(assertSelectedElements([]));
       expect(API.getUndoStack().length).toBe(2);
       expect(API.getRedoStack().length).toBe(0);
       expect(h.elements).toEqual([
         expect.objectContaining({
-          backgroundColor: transparent,
+          backgroundColor: yellow,
           isDeleted: true,
         }),
       ]);
@@ -831,29 +819,6 @@ describe("history", () => {
         expect.objectContaining({
           id: rect2.id,
           isDeleted: false,
-          backgroundColor: transparent,
-        }),
-        expect.objectContaining({
-          id: rect3.id,
-          isDeleted: true,
-          x: 30,
-          y: 30,
-        }),
-      ]);
-
-      Keyboard.redo();
-      expect(API.getUndoStack().length).toBe(3);
-      expect(API.getRedoStack().length).toBe(2);
-      expect(API.getSelectedElements()).toEqual([
-        expect.objectContaining({ id: rect2.id }),
-      ]);
-      expect(h.elements).toEqual([
-        expect.objectContaining({
-          id: rect1.id,
-        }),
-        expect.objectContaining({
-          id: rect2.id,
-          isDeleted: false,
           backgroundColor: red,
         }),
         expect.objectContaining({
@@ -882,11 +847,12 @@ describe("history", () => {
         expect.objectContaining({
           id: rect3.id,
           isDeleted: false,
-          x: 30,
-          y: 30,
+          x: 50,
+          y: 50,
         }),
       ]);
 
+      // no-op
       Keyboard.redo();
       expect(API.getUndoStack().length).toBe(5);
       expect(API.getRedoStack().length).toBe(0);
@@ -1072,19 +1038,20 @@ describe("history", () => {
       expect(API.getRedoStack().length).toBe(1);
       assertSelectedElements([rect2]);
       expect(h.elements).toEqual([
-        expect.objectContaining({ id: rect1.id }),
         expect.objectContaining({ id: rect2.id }),
         expect.objectContaining({ id: rect3.id }),
+        expect.objectContaining({ id: rect1.id }),
       ]);
 
+      // no-op
       Keyboard.redo();
       expect(API.getUndoStack().length).toBe(2);
       expect(API.getRedoStack().length).toBe(0);
       assertSelectedElements([rect2]);
       expect(h.elements).toEqual([
-        expect.objectContaining({ id: rect1.id }),
-        expect.objectContaining({ id: rect3.id }),
         expect.objectContaining({ id: rect2.id }),
+        expect.objectContaining({ id: rect3.id }),
+        expect.objectContaining({ id: rect1.id }),
       ]);
     });
 
