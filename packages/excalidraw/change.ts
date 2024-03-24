@@ -878,6 +878,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     const removedElements = applyDeltas(this.removed);
 
     const changedElements = ElementsChange.resolveAffectedBindings(
+      elements,
       nextElements,
       addedElements,
       updatedElements,
@@ -1052,6 +1053,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
   }
 
   private static resolveAffectedBindings(
+    prevElements: SceneElementsMap,
     nextElements: SceneElementsMap,
     added: Map<string, OrderedExcalidrawElement>,
     updated: Map<string, OrderedExcalidrawElement>,
@@ -1074,6 +1076,9 @@ export class ElementsChange implements Change<SceneElementsMap> {
         mutateElement(maybeAffectedElement, updates, false);
       }
     };
+
+    // TODO: unbind also previous non deleted elements, so they don't point to deleted elements or affected elements
+    // i.e. previous container pointing to text element should not point to it anymore, if the text element got bind to something else
 
     ElementsChange.unbindAffectedElements(nextElements, removed, setter);
     ElementsChange.rebindAffectedElements(nextElements, updated, setter);
