@@ -12,14 +12,17 @@ import {
   ExcalidrawTextElement,
   ExcalidrawArrowElement,
   Ordered,
+  ExcalidrawTextElementWithContainer,
 } from "./types";
 import { getElementAtPosition } from "../scene";
 import { AppState } from "../types";
 import {
+  isArrowElement,
   isBindableElement,
   isBindingElement,
   isBoundToContainer,
   isLinearElement,
+  isTextElement,
 } from "./typeChecks";
 import {
   bindingBorderTest,
@@ -29,7 +32,7 @@ import {
   intersectElementWithLine,
   determineFocusPoint,
 } from "./collision";
-import { mutateElement } from "./mutateElement";
+import { ElementUpdate, mutateElement } from "./mutateElement";
 import Scene from "../scene/Scene";
 import { LinearElementEditor } from "./linearElementEditor";
 import { arrayToMap, tupleToCoors } from "../utils";
@@ -371,7 +374,6 @@ const calculateFocusAndGap = (
 export const updateBoundElements = (
   changedElement: NonDeletedExcalidrawElement,
   elementsMap: ElementsMap,
-
   options?: {
     simultaneouslyUpdated?: readonly ExcalidrawElement[];
     newSize?: { width: number; height: number };
@@ -783,348 +785,6 @@ const newBindingAfterDuplication = (
   };
 };
 
-export class BindingsCleaner {
-  public static cleanChanged(
-    elements: SceneElementsMap,
-    changed: Map<string, OrderedExcalidrawElement>,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) {
-    for (const element of changed.values()) {
-      this.cleanElement(elements, element, callback);
-    }
-  }
-
-  public static cleanElement(
-    elements: SceneElementsMap,
-    element: OrderedExcalidrawElement,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) {
-    if (element.frameId) {
-      const frame = elements.get(element.frameId);
-      if (!frame || frame.isDeleted) {
-        callback(mutateElement(element, { frameId: null }, false));
-      }
-    }
-
-    if (isBoundToContainer(element)) {
-      const bindable = elements.get(element.containerId);
-      this.maybeUnbindBoundElement(element, "containerId", bindable, callback);
-      this.maybeUnbindBindableElement(bindable, element, callback);
-    }
-
-    if (isBindingElement(element)) {
-      if (element.startBinding) {
-        const bindable = elements.get(element.startBinding.elementId);
-        this.maybeUnbindBoundElement(
-          element,
-          "startBinding",
-          bindable,
-          callback,
-        );
-        this.maybeUnbindBindableElement(bindable, element, callback);
-      }
-
-      if (element.endBinding) {
-        const bindable = elements.get(element.endBinding.elementId);
-        this.maybeUnbindBoundElement(element, "endBinding", bindable, callback);
-        this.maybeUnbindBindableElement(bindable, element, callback);
-      }
-    }
-
-    if (isBindableElement(element)) {
-      element.boundElements?.forEach(({ id }) => {
-        const boundElement = elements.get(id);
-        this.maybeUnbindBoundElement(
-          boundElement,
-          "containerId",
-          element,
-          callback,
-        );
-        this.maybeUnbindBoundElement(
-          boundElement,
-          "startBinding",
-          element,
-          callback,
-        );
-        this.maybeUnbindBoundElement(
-          boundElement,
-          "endBinding",
-          element,
-          callback,
-        );
-      });
-
-      const textElements =
-        element.boundElements?.filter((x) => x.type === "text") ?? [];
-
-      if (textElements.length > 1) {
-        // deduplicate ~ remove all but first text element
-        textElements.shift();
-
-        callback(
-          mutateElement(element, {
-            boundElements: newBoundElements(
-              element.boundElements,
-              new Set(textElements.map((x) => x.id)),
-            ),
-          }),
-        );
-      }
-    }
-  }
-
-  private static maybeUnbindBoundElement = (
-    element: OrderedExcalidrawElement | undefined,
-    bindingProperty: BindingProp | BindableProp,
-    bindableElement: OrderedExcalidrawElement | undefined,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) => {
-    if (!bindableElement || bindableElement.isDeleted) {
-      callback(
-        mutateElement(
-          element as Ordered<ExcalidrawTextElement>,
-          { [bindingProperty]: null },
-          false,
-        ),
-      );
-    }
-  };
-
-  private static maybeUnbindBindableElement = (
-    bindableElement: OrderedExcalidrawElement | undefined,
-    boundElement: OrderedExcalidrawElement,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) => {
-    if (bindableElement) {
-      if (
-        !bindableElement.boundElements?.find((x) => x.id === boundElement.id)
-      ) {
-        callback(
-          mutateElement(
-            bindableElement,
-            {
-              boundElements: newBoundElements(
-                bindableElement.boundElements,
-                new Set(boundElement.id),
-              ),
-            },
-            false,
-          ),
-        );
-      }
-    }
-  };
-}
-
-type BindingProp = "containerId" | "startBinding" | "endBinding";
-type BindableElementVisitingFunc = (
-  bindableElement: OrderedExcalidrawElement,
-  bindingProperty: BindingProp,
-) => void;
-
-type BindableProp = "boundElements";
-type BoundElementsVisitingFunc = (
-  boundElement: OrderedExcalidrawElement,
-  bindingProperty: BindableProp,
-) => void;
-
-const bindableElementsVisitor = (
-  element: ExcalidrawElement,
-  elements: SceneElementsMap,
-  visit: BindableElementVisitingFunc,
-) => {
-  if (isBoundToContainer(element)) {
-    const bindableContainer = elements.get(element.containerId);
-
-    if (bindableContainer && !bindableContainer.isDeleted) {
-      visit(bindableContainer, "containerId");
-    }
-  }
-
-  if (isBindingElement(element)) {
-    if (element.startBinding) {
-      const bindableElement = elements.get(element.startBinding.elementId);
-
-      if (bindableElement && !bindableElement.isDeleted) {
-        visit(bindableElement, "startBinding");
-      }
-    }
-
-    if (element.endBinding) {
-      const bindableElement = elements.get(element.endBinding.elementId);
-
-      if (bindableElement && !bindableElement.isDeleted) {
-        visit(bindableElement, "endBinding");
-      }
-    }
-  }
-};
-
-const boundElementsVisitor = (
-  element: ExcalidrawElement,
-  elements: SceneElementsMap,
-  visit: BoundElementsVisitingFunc,
-) => {
-  if (isBindableElement(element)) {
-    element.boundElements?.forEach(({ id }) => {
-      const boundElement = elements.get(id);
-
-      if (boundElement && !boundElement.isDeleted) {
-        visit(boundElement, "boundElements");
-      }
-    });
-  }
-};
-
-export class AffectedBoundElements {
-  /**
-   * - iterates through `boundElements` of the current element
-   * - unbinds (mutates) each bound element from the current element
-   * - returns mutated elements as affected elements
-   */
-  public static unbind(
-    element: OrderedExcalidrawElement,
-    elements: SceneElementsMap,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) {
-    boundElementsVisitor(element, elements, (boundElement) => {
-      bindableElementsVisitor(
-        boundElement,
-        elements,
-        (bindableElement, bindingProperty) => {
-          // making sure there is an element to be unbound
-          if (bindableElement.id === element.id) {
-            callback(
-              mutateElement(element, { [bindingProperty]: null }, false),
-            );
-          }
-        },
-      );
-    });
-  }
-
-  /**
-   * - iterates through `boundElements` of the current element
-   * - rebinds (mutates) each bound element to the current element
-   * - returns mutated elements as affected elements
-   */
-  public static rebind = (
-    element: OrderedExcalidrawElement,
-    elements: SceneElementsMap,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) => {
-    boundElementsVisitor(element, elements, (boundElement) => {
-      // this one is a bit tricky, as we:
-      // - want to rebind only in case the bindings are not defined, so that we don't override already valid bindings
-      // - cannot rebind arrows, as we don't have a contextual info on the boundElement level (i.e. in case it's start / end binding)
-      // TODO: add startBinding / endBinding to the `BoundElement` so that we could rebind arrows
-      if (
-        boundElement.type === "text" &&
-        boundElement.containerId !== element.id
-      ) {
-        if (boundElement.containerId === null) {
-          // rebind with the container in case the element is not bound
-          callback(
-            mutateElement(boundElement, { containerId: element.id }, false),
-          );
-        } else {
-          // unbind from boundElements as the element is bound to some other element (could have happened in the meantime)
-          callback(
-            mutateElement(
-              element,
-              {
-                boundElements: newBoundElements(
-                  element.boundElements,
-                  new Set(boundElement.id),
-                ),
-              },
-              false,
-            ),
-          );
-        }
-      }
-    });
-  };
-}
-
-export class AffectedBindableElements {
-  /**
-   * - iterates bindable elements (`containerId` | `startBinding.elementId` | `endBinding.elementId`) of the current element
-   * - unbinds (mutates) each bindable element's `boundElements` from the current element
-   * - returns mutated elements as affected elements
-   */
-  public static unbind(
-    element: OrderedExcalidrawElement,
-    elements: SceneElementsMap,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) {
-    bindableElementsVisitor(element, elements, (bindableElement) => {
-      boundElementsVisitor(bindableElement, elements, (boundElement) => {
-        if (boundElement.id === element.id) {
-          callback(
-            mutateElement(
-              bindableElement,
-              {
-                boundElements: newBoundElements(
-                  bindableElement.boundElements,
-                  new Set(boundElement.id),
-                ),
-              },
-              false,
-            ),
-          );
-        }
-      });
-    });
-  }
-
-  /**
-   * - iterates bindable elements (`containerId` | `startBinding.elementId` | `endBinding.elementId`) of the current element
-   * - rebinds (mutates) each bindable element's `boundElements` to the current element
-   * - returns mutated elements as affected elements
-   */
-  public static rebind = (
-    element: OrderedExcalidrawElement,
-    elements: SceneElementsMap,
-    callback: (affectedElement: OrderedExcalidrawElement) => void,
-  ) => {
-    bindableElementsVisitor(element, elements, (bindableElement) => {
-      let shouldRebindElement = true;
-
-      boundElementsVisitor(bindableElement, elements, (boundElement) => {
-        if (shouldRebindElement) {
-          return;
-        }
-
-        if (boundElement.id === element.id) {
-          // the element is already bound!
-          shouldRebindElement = false;
-        }
-      });
-
-      if (shouldRebindElement) {
-        const boundElement = element as
-          | ExcalidrawArrowElement
-          | ExcalidrawTextElement;
-
-        callback(
-          mutateElement(
-            bindableElement,
-            {
-              boundElements: newBoundElements(
-                bindableElement.boundElements,
-                new Set(),
-                new Array(boundElement),
-              ),
-            },
-            false,
-          ),
-        );
-      }
-    });
-  };
-}
-
 export const fixBindingsAfterDeletion = (
   sceneElements: readonly ExcalidrawElement[],
   deletedElements: readonly ExcalidrawElement[],
@@ -1189,19 +849,351 @@ const newBindingAfterDeletion = (
 const newBoundElements = (
   boundElements: ExcalidrawElement["boundElements"],
   idsToRemove: Set<ExcalidrawElement["id"]>,
-  elementsToAdd: Array<ExcalidrawArrowElement | ExcalidrawTextElement> = [],
+  elementsToAdd: Array<ExcalidrawElement> = [],
 ) => {
   if (!boundElements) {
     return null;
   }
 
   const nextBoundElements = boundElements.filter(
-    (ele) => !idsToRemove.has(ele.id),
+    (boundElement) => !idsToRemove.has(boundElement.id),
   );
 
   nextBoundElements.push(
-    ...elementsToAdd.map((x) => ({ id: x.id, type: x.type })),
+    ...elementsToAdd.map(
+      (x) =>
+        ({ id: x.id, type: x.type } as
+          | ExcalidrawArrowElement
+          | ExcalidrawTextElement),
+    ),
   );
 
   return nextBoundElements;
 };
+
+type BindingProp = "containerId" | "startBinding" | "endBinding";
+type BindableElementVisitingFunc = (
+  bindableElement: OrderedExcalidrawElement,
+  bindingProperty: BindingProp,
+) => void;
+
+type BindableProp = "boundElements";
+type BoundElementsVisitingFunc = (
+  boundElement: OrderedExcalidrawElement,
+  bindingProperty: BindableProp,
+) => void;
+
+/**
+ * Visits each bindable element if found, unbinds otherwise.
+ */
+const bindableElementsVisitor = (
+  elements: SceneElementsMap,
+  element: OrderedExcalidrawElement,
+  updateElementWith: (
+    affected: OrderedExcalidrawElement,
+    updates: ElementUpdate<OrderedExcalidrawElement>,
+  ) => void,
+  visit: BindableElementVisitingFunc,
+) => {
+  if (isBoundToContainer(element)) {
+    const bindableContainer = elements.get(element.containerId);
+
+    if (bindableContainer) {
+      visit(bindableContainer, "containerId");
+    } else {
+      updateElementWith(element, { containerId: null } as ElementUpdate<
+        Ordered<ExcalidrawTextElement>
+      >);
+    }
+  }
+
+  if (isArrowElement(element)) {
+    if (element.startBinding) {
+      const bindableElement = elements.get(element.startBinding.elementId);
+
+      if (bindableElement) {
+        visit(bindableElement, "startBinding");
+      } else {
+        updateElementWith(element, { containerId: null } as ElementUpdate<
+          Ordered<ExcalidrawArrowElement>
+        >);
+      }
+    }
+
+    if (element.endBinding) {
+      const bindableElement = elements.get(element.endBinding.elementId);
+
+      if (bindableElement) {
+        visit(bindableElement, "endBinding");
+      } else {
+        updateElementWith(element, { endBinding: null } as ElementUpdate<
+          Ordered<ExcalidrawArrowElement>
+        >);
+      }
+    }
+  }
+};
+
+/**
+ * Visits each bound element if found, unbinds otherwise.
+ */
+const boundElementsVisitor = (
+  elements: SceneElementsMap,
+  element: OrderedExcalidrawElement,
+  updateElementWith: (
+    affected: OrderedExcalidrawElement,
+    updates: ElementUpdate<OrderedExcalidrawElement>,
+  ) => void,
+  visit: BoundElementsVisitingFunc,
+) => {
+  if (isBindableElement(element)) {
+    // go in reverse order due to text duplicates ~ last added is the duplicate
+    element.boundElements?.toReversed().forEach(({ id }) => {
+      const boundElement = elements.get(id);
+
+      if (boundElement) {
+        visit(boundElement, "boundElements");
+      } else {
+        updateElementWith(element, {
+          boundElements: newBoundElements(element.boundElements, new Set([id])),
+        });
+      }
+    });
+  }
+};
+
+export class AffectedBoundElements {
+  /**
+   * - iterates through non deleted `boundElements` of the current element
+   * - prepares updates to unbind each bound element from the current element
+   */
+  public static unbind(
+    elements: SceneElementsMap,
+    element: OrderedExcalidrawElement,
+    updateElementWith: (
+      affected: OrderedExcalidrawElement,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => void,
+  ) {
+    // operate only on deleted elements
+    if (!element.isDeleted) {
+      return;
+    }
+
+    boundElementsVisitor(
+      elements,
+      element,
+      updateElementWith,
+      (boundElement) => {
+        // bound element is also deleted, this is fine
+        if (boundElement.isDeleted) {
+          return;
+        }
+
+        bindableElementsVisitor(
+          elements,
+          boundElement,
+          updateElementWith,
+          (bindableElement, bindingProperty) => {
+            // making sure there is an element to be unbound
+            if (bindableElement.id === element.id) {
+              updateElementWith(boundElement, { [bindingProperty]: null });
+            }
+          },
+        );
+      },
+    );
+  }
+
+  /**
+   * - iterates through non deleted `boundElements` of the current element
+   * - prepares updates to rebind each bound element to the current element or unbind it from `boundElements` in case of conflicts
+   */
+  public static rebind = (
+    elements: SceneElementsMap,
+    element: OrderedExcalidrawElement,
+    updateElementWith: (
+      affected: OrderedExcalidrawElement,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => void,
+  ) => {
+    // skip in case the element is deleted (i.e. updated as deleted)
+    if (element.isDeleted) {
+      return;
+    }
+
+    boundElementsVisitor(
+      elements,
+      element,
+      updateElementWith,
+      (boundElement, bindingProperty) => {
+        // unbind from bindable elements, as bindings from non deleted elements into deleted elements are incorrect
+        if (boundElement.isDeleted) {
+          updateElementWith(element, { [bindingProperty]: null });
+          return;
+        }
+
+        // this one is a bit tricky, as we:
+        // - want to rebind only in case the bindings are not defined, so that we don't override already valid bindings
+        // - cannot rebind arrows, as we don't have a contextual info on the `BoundElement` level (i.e. in case it's a start / end binding)
+        if (
+          isTextElement(boundElement) &&
+          boundElement.containerId !== element.id
+        ) {
+          const textElements =
+            element.boundElements?.filter((x) => x.type === "text") ?? [];
+
+          if (boundElement.containerId === null && textElements.length <= 1) {
+            // rebind with the container in case the element is not bound and there is no text element bound already
+            updateElementWith(boundElement, {
+              containerId: element.id,
+            } as ElementUpdate<Ordered<ExcalidrawTextElementWithContainer>>);
+          } else {
+            // unbind from boundElements as the element got (in the meantime) bound to some other element
+            updateElementWith(element, {
+              boundElements: newBoundElements(
+                element.boundElements,
+                new Set([boundElement.id]),
+              ),
+            });
+          }
+        }
+
+        // TODO: add startBinding / endBinding to the `BoundElement` context so that we could rebind arrows
+        // TODO: technically the arrow binding should also be updated in case the bindable element was moved in the meantime
+      },
+    );
+  };
+}
+
+export class AffectedBindableElements {
+  /**
+   * - iterates non deleted bindable elements (`containerId` | `startBinding.elementId` | `endBinding.elementId`) of the current element
+   * - prepares updates to unbind each bindable element's `boundElements` from the current element
+   */
+  public static unbind(
+    elements: SceneElementsMap,
+    element: OrderedExcalidrawElement,
+    updateElementWith: (
+      affected: OrderedExcalidrawElement,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => void,
+  ) {
+    // operate only on deleted elements
+    if (!element.isDeleted) {
+      return;
+    }
+
+    bindableElementsVisitor(
+      elements,
+      element,
+      updateElementWith,
+      (bindableElement) => {
+        // bindable element is also deleted, this is fine
+        if (bindableElement.isDeleted) {
+          return;
+        }
+
+        boundElementsVisitor(
+          elements,
+          bindableElement,
+          updateElementWith,
+          (boundElement) => {
+            if (boundElement.id === element.id) {
+              updateElementWith(bindableElement, {
+                boundElements: newBoundElements(
+                  bindableElement.boundElements,
+                  new Set([boundElement.id]),
+                ),
+              });
+            }
+          },
+        );
+      },
+    );
+  }
+
+  /**
+   * - iterates non deleted bindable elements (`containerId` | `startBinding.elementId` | `endBinding.elementId`) of the current element
+   * - prepares updates to rebind each bindable element's `boundElements` to the current element
+   */
+  public static rebind = (
+    elements: SceneElementsMap,
+    element: OrderedExcalidrawElement,
+    updateElementWith: (
+      affected: OrderedExcalidrawElement,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => void,
+  ) => {
+    // skip in case the element is deleted (i.e. updated as deleted)
+    if (element.isDeleted) {
+      return;
+    }
+
+    // unbind if frame got deleted in the meantime
+    if (element.frameId) {
+      const frame = elements.get(element.frameId);
+      if (!frame || frame.isDeleted) {
+        updateElementWith(element, { frameId: null });
+      }
+    }
+
+    bindableElementsVisitor(
+      elements,
+      element,
+      updateElementWith,
+      (bindableElement, bindingProperty) => {
+        // unbind from bindable elements, as bindings from non deleted elements into deleted elements are incorrect
+        if (bindableElement.isDeleted) {
+          // BEFORE:  A (isDeleted: false, containerId: "B")    ----> B (isDeleted: true, boundElements: any)
+          // AFTER:   A (isDeleted: false, containerId: "null") --x-> B (isDeleted: true, boundElements: any)
+          updateElementWith(element, { [bindingProperty]: null });
+          return;
+        }
+
+        let shouldRebindElement = true;
+
+        boundElementsVisitor(
+          elements,
+          bindableElement,
+          updateElementWith,
+          (boundElement) => {
+            if (shouldRebindElement) {
+              return;
+            }
+
+            if (boundElement.id === element.id) {
+              // the element is already bound!
+              shouldRebindElement = false;
+            }
+          },
+        );
+
+        // the element wasn't found in `boundElements` -> try to rebind
+        if (shouldRebindElement) {
+          if (isTextElement(element)) {
+            const textElements =
+              bindableElement.boundElements?.filter((x) => x.type === "text") ??
+              [];
+
+            // unbind from the bindable element, as there is already a text element bound within `boundElements`
+            if (textElements.length > 0) {
+              updateElementWith(element, { [bindingProperty]: null });
+              return;
+            }
+          }
+
+          // BEFORE:  A (isDeleted: false, containerId: "B") ----> B (isDeleted: false, boundElements: [])
+          // AFTER:   A (isDeleted: false, containerId: "B") <---> B (isDeleted: false, boundElements: [{"id": "A", "type": "text"}])
+          updateElementWith(bindableElement, {
+            boundElements: newBoundElements(
+              bindableElement.boundElements,
+              new Set(),
+              new Array(element),
+            ),
+          });
+        }
+      },
+    );
+  };
+}

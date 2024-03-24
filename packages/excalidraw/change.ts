@@ -2,10 +2,13 @@ import { ENV } from "./constants";
 import {
   AffectedBindableElements,
   AffectedBoundElements,
-  BindingsCleaner,
 } from "./element/binding";
 import { LinearElementEditor } from "./element/linearElementEditor";
-import { ElementUpdate, mutateElement } from "./element/mutateElement";
+import {
+  ElementUpdate,
+  mutateElement,
+  newElementWith,
+} from "./element/mutateElement";
 import {
   getBoundTextElementId,
   redrawTextBoundingBox,
@@ -453,7 +456,7 @@ export class AppStateChange implements Change<AppState> {
     );
 
     if (containsStandaloneDifference) {
-      // We detected a a difference which is unrelated to the elements
+      // we detected a a difference which is unrelated to the elements
       visibleDifferenceFlag.value = true;
     }
 
@@ -463,18 +466,18 @@ export class AppStateChange implements Change<AppState> {
     );
 
     if (!containsStandaloneDifference && !containsElementsDifference) {
-      // There is no difference detected at all
+      // there is no difference detected at all
       visibleDifferenceFlag.value = false;
     }
 
-    // We need to handle elements differences separately,
+    // we need to handle elements differences separately,
     // as they could be related to deleted elements and/or they could on their own result in no visible action
     const changedDeltaKeys = Delta.getRightDifferences(
       AppStateChange.stripStandaloneProps(prevObservedAppState),
       AppStateChange.stripStandaloneProps(nextObservedAppState),
     ) as Array<keyof ObservedElementsAppState>;
 
-    // Check whether delta properties are related to the existing non-deleted elements
+    // check whether delta properties are related to the existing non-deleted elements
     for (const key of changedDeltaKeys) {
       switch (key) {
         case "selectedElementIds":
@@ -487,7 +490,7 @@ export class AppStateChange implements Change<AppState> {
           break;
         case "selectedLinearElementId":
         case "editingLinearElementId":
-          // Map increment key back into the appState key
+          // map the increment key back into the appState key
           const appStateKey =
             key === "selectedLinearElementId"
               ? "selectedLinearElement"
@@ -533,7 +536,7 @@ export class AppStateChange implements Change<AppState> {
       const element = elements.get(id);
 
       if (element && !element.isDeleted) {
-        // Found related visible element!
+        // found related visible element!
         visibleDifferenceFlag.value = true;
       } else {
         delete nextSelectedElementIds[id];
@@ -559,7 +562,7 @@ export class AppStateChange implements Change<AppState> {
     const element = elements.get(linearElement.elementId);
 
     if (element && !element.isDeleted) {
-      // Found related visible element!
+      // found related visible element!
       visibleDifferenceFlag.value = true;
     } else {
       result = null;
@@ -623,7 +626,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
       ElementsChange.validateInvariants(
         "added",
         added,
-        // Element could be inserted as deleted - ignoring "inserted"
+        // clement could be inserted as deleted - ignoring "inserted"
         (deleted, _) => deleted.isDeleted === true,
       );
       ElementsChange.validateInvariants(
@@ -677,12 +680,11 @@ export class ElementsChange implements Change<SceneElementsMap> {
       return ElementsChange.empty();
     }
 
-    // TODO: for memory, share the same delta instances between different deltas (flyweight-like)
     const added = new Map<string, Delta<ElementPartial>>();
     const removed = new Map<string, Delta<ElementPartial>>();
     const updated = new Map<string, Delta<ElementPartial>>();
 
-    // This might be needed only in same edge cases, like during collab, when `isDeleted` elements get removed or when we (un)intentionally remove the elements
+    // this might be needed only in same edge cases, like during collab, when `isDeleted` elements get removed or when we (un)intentionally remove the elements
     for (const prevElement of prevElements.values()) {
       const nextElement = nextElements.get(prevElement.id);
 
@@ -730,12 +732,12 @@ export class ElementsChange implements Change<SceneElementsMap> {
         );
 
         if (
-          // Making sure we don't get here some non-boolean values (i.e. undefined, null, etc.)
+          // making sure we don't get here some non-boolean values (i.e. undefined, null, etc.)
           typeof prevElement.isDeleted === "boolean" &&
           typeof nextElement.isDeleted === "boolean" &&
           prevElement.isDeleted !== nextElement.isDeleted
         ) {
-          // Notice that other props could have been updated as well
+          // notice that other props could have been updated as well
           if (prevElement.isDeleted && !nextElement.isDeleted) {
             added.set(nextElement.id, delta);
           } else {
@@ -745,7 +747,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
           continue;
         }
 
-        // Making sure there are at least some changes
+        // making sure there are at least some changes
         if (!Delta.isEmpty(delta)) {
           updated.set(nextElement.id, delta);
         }
@@ -774,7 +776,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     const removed = inverseInternal(this.removed);
     const updated = inverseInternal(this.updated);
 
-    // Notice we inverse removed with added not to break the invariants
+    // notice we inverse removed with added not to break the invariants
     return ElementsChange.create(removed, added, updated);
   }
 
@@ -839,7 +841,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
 
           modifiedDeltas.set(id, modifiedDelta);
         } else {
-          // Keep whatever we had
+          // keep whatever we had
           modifiedDeltas.set(id, delta);
         }
       }
@@ -854,37 +856,42 @@ export class ElementsChange implements Change<SceneElementsMap> {
     return ElementsChange.create(added, removed, updated);
   }
 
-  // TODO: think about a transaction, so either all mutations go through or we trigger a rollback
   public applyTo(
     elements: SceneElementsMap,
     snapshot: Map<string, OrderedExcalidrawElement>,
   ): [SceneElementsMap, boolean] {
-    let next = toBrandedType<SceneElementsMap>(new Map(elements));
+    let nextElements = toBrandedType<SceneElementsMap>(new Map(elements));
 
     const flags = {
       containsVisibleDifference: false,
       containsZindexDifference: false,
     };
 
-    const applyDeltas = ElementsChange.createApplier(next, snapshot, flags);
-
-    const added = applyDeltas(this.added);
-    const updated = applyDeltas(this.updated);
-    const removed = applyDeltas(this.removed);
-
-    const affected = ElementsChange.resolveBindings(
-      next,
-      added,
-      updated,
-      removed,
+    const applyDeltas = ElementsChange.createApplier(
+      nextElements,
+      snapshot,
+      flags,
     );
 
-    const changed = new Map([...added, ...updated, ...removed, ...affected]);
+    const addedElements = applyDeltas(this.added);
+    const updatedElements = applyDeltas(this.updated);
+    const removedElements = applyDeltas(this.removed);
 
-    ElementsChange.redrawTextBoundingBoxes(next, changed);
-    next = ElementsChange.reorderElements(next, changed, flags);
+    const changedElements = ElementsChange.resolveAffectedBindings(
+      nextElements,
+      addedElements,
+      updatedElements,
+      removedElements,
+    );
 
-    return [next, flags.containsVisibleDifference];
+    ElementsChange.redrawTextBoundingBoxes(nextElements, changedElements);
+    nextElements = ElementsChange.reorderElements(
+      nextElements,
+      changedElements,
+      flags,
+    );
+
+    return [nextElements, flags.containsVisibleDifference];
   }
 
   private static createApplier = (
@@ -906,12 +913,9 @@ export class ElementsChange implements Change<SceneElementsMap> {
         const element = getElement(id, delta.inserted);
 
         if (element) {
-          const mutatedElement = ElementsChange.applyDelta(
-            element,
-            delta,
-            flags,
-          );
-          acc.set(mutatedElement.id, mutatedElement);
+          const newElement = ElementsChange.applyDelta(element, delta, flags);
+          nextElements.set(newElement.id, newElement);
+          acc.set(newElement.id, newElement);
         }
 
         return acc;
@@ -931,15 +935,15 @@ export class ElementsChange implements Change<SceneElementsMap> {
       let element = elements.get(id);
 
       if (!element) {
-        // Always fallback to the local snapshot, in cases when we cannot find the element in the elements array
+        // always fallback to the local snapshot, in cases when we cannot find the element in the elements array
         element = snapshot.get(id);
 
         if (element) {
-          // As the element was brought from the snapshot, it automatically results in a possible* zindex difference
+          // as the element was brought from the snapshot, it automatically results in a possible* zindex difference
           // *possible as there is additional check down the road at `reorderElements`
           flags.containsZindexDifference = true;
 
-          // As the element was force deleted, we need to check if adding it back results in a visible change
+          // as the element was force deleted, we need to check if adding it back results in a visible change
           if (
             partial.isDeleted === false ||
             (partial.isDeleted !== true && element.isDeleted === false)
@@ -1003,7 +1007,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     };
 
     if (!flags.containsVisibleDifference) {
-      // Strip away fractional as even if it would be different, it doesn't have to result in visible change
+      // strip away fractional as even if it would be different, it doesn't have to result in visible change
       const { index, ...rest } = mergedPartial;
       const containsVisibleDifference =
         ElementsChange.checkForVisibleDifference(element, rest);
@@ -1016,9 +1020,9 @@ export class ElementsChange implements Change<SceneElementsMap> {
         delta.deleted.index !== delta.inserted.index;
     }
 
-    const mutatedElement = mutateElement(element, mergedPartial, false);
+    const nextElement = newElementWith(element, mergedPartial);
 
-    return mutatedElement;
+    return nextElement;
   }
 
   /**
@@ -1029,76 +1033,89 @@ export class ElementsChange implements Change<SceneElementsMap> {
     partial: ElementPartial,
   ) {
     if (element.isDeleted && partial.isDeleted !== false) {
-      // When it's deleted and partial is not false, it cannot end up with a visible change
+      // when it's deleted and partial is not false, it cannot end up with a visible change
       return false;
     }
 
     if (element.isDeleted && partial.isDeleted === false) {
-      // When we add an element, it results in a visible change
+      // when we add an element, it results in a visible change
       return true;
     }
 
     if (element.isDeleted === false && partial.isDeleted) {
-      // When we remove an element, it results in a visible change
+      // when we remove an element, it results in a visible change
       return true;
     }
 
-    // Check for any difference on a visible element
+    // check for any difference on a visible element
     return Delta.isRightDifferent(element, partial);
   }
 
-  private static resolveBindings(
-    elements: SceneElementsMap,
+  private static resolveAffectedBindings(
+    nextElements: SceneElementsMap,
     added: Map<string, OrderedExcalidrawElement>,
     updated: Map<string, OrderedExcalidrawElement>,
     removed: Map<string, OrderedExcalidrawElement>,
   ) {
     const affected = new Map<string, OrderedExcalidrawElement>();
-    const setter =
-      (element: OrderedExcalidrawElement) =>
-      (affectedElement: OrderedExcalidrawElement) => {
-        // making sure we don't set already changed element as affected element
-        if (affectedElement.id !== element.id) {
-          affected.set(affectedElement.id, affectedElement);
-        }
-      };
+    const changed = new Map([...added, ...updated, ...removed]);
 
-    console.time("resolving bindings")
-    ElementsChange.resolveBindingsAfterAddition(elements, added, setter);
-    ElementsChange.resolveBindingsAfterRemoval(elements, removed, setter);
+    const setter = (
+      maybeAffectedElement: OrderedExcalidrawElement,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => {
+      if (!changed.has(maybeAffectedElement.id)) {
+        const affectedElement = newElementWith(maybeAffectedElement, updates);
 
-    BindingsCleaner.cleanChanged(elements, added, setter);
-    BindingsCleaner.cleanChanged(elements, removed, setter);
-    BindingsCleaner.cleanChanged(elements, updated, setter);
-    BindingsCleaner.cleanChanged(elements, affected, setter);
-    console.timeEnd("resolving bindings")
+        affected.set(affectedElement.id, affectedElement);
+        nextElements.set(affectedElement.id, affectedElement);
+      } else {
+        // making sure we don't create a new instance of already changed element
+        mutateElement(maybeAffectedElement, updates, false);
+      }
+    };
 
-    return affected;
+    ElementsChange.unbindAffectedElements(nextElements, removed, setter);
+    ElementsChange.rebindAffectedElements(nextElements, updated, setter);
+    ElementsChange.rebindAffectedElements(nextElements, added, setter);
+
+    return new Map([...changed, ...affected]);
   }
 
-  private static resolveBindingsAfterAddition(
-    elements: SceneElementsMap,
-    added: Map<string, OrderedExcalidrawElement>,
-    setter: (
-      element: OrderedExcalidrawElement,
-    ) => (affectedElement: OrderedExcalidrawElement) => void,
-  ) {
-    for (const element of added.values()) {
-      AffectedBoundElements.rebind(element, elements, setter(element));
-      AffectedBindableElements.rebind(element, elements, setter(element));
-    }
-  }
-
-  private static resolveBindingsAfterRemoval(
+  /**
+   * Non deleted affected elements of removed elements,
+   * should not contain bindings into the removed element/s - make sure to unbind such bindings.
+   */
+  private static unbindAffectedElements(
     elements: SceneElementsMap,
     removed: Map<string, OrderedExcalidrawElement>,
     setter: (
       element: OrderedExcalidrawElement,
-    ) => (affectedElement: OrderedExcalidrawElement) => void,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => void,
   ) {
     for (const element of removed.values()) {
-      AffectedBindableElements.unbind(element, elements, setter(element));
-      AffectedBoundElements.unbind(element, elements, setter(element));
+      AffectedBindableElements.unbind(elements, element, setter);
+      AffectedBoundElements.unbind(elements, element, setter);
+    }
+  }
+
+  /**
+   * Non deleted affected elements of added or updated element/s,
+   * should be rebound (if possible) with the current element - make sure bindings
+   * from such elements into the current element are present & bi-directional.
+   */
+  private static rebindAffectedElements(
+    elements: SceneElementsMap,
+    maybeNonDeleted: Map<string, OrderedExcalidrawElement>,
+    setter: (
+      element: OrderedExcalidrawElement,
+      updates: ElementUpdate<OrderedExcalidrawElement>,
+    ) => void,
+  ) {
+    for (const element of maybeNonDeleted.values()) {
+      AffectedBindableElements.rebind(elements, element, setter);
+      AffectedBoundElements.rebind(elements, element, setter);
     }
   }
 
@@ -1141,7 +1158,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
 
     for (const { container, boundText } of boxesToRedraw.values()) {
       if (container.isDeleted || boundText.isDeleted) {
-        // Skip redraw if one of them is deleted, as it would not result in a meaningful redraw
+        // skip redraw if one of them is deleted, as it would not result in a meaningful redraw
         continue;
       }
 
@@ -1168,11 +1185,11 @@ export class ElementsChange implements Change<SceneElementsMap> {
       !flags.containsVisibleDifference &&
       Delta.isRightDifferent(previous, reordered, true)
     ) {
-      // We found a difference in order!
+      // we found a difference in order!
       flags.containsVisibleDifference = true;
     }
 
-    // Let's synchronize all invalid indices of moved elements
+    // let's synchronize all invalid indices of moved elements
     return arrayToMap(syncMovedIndices(reordered, changed)) as typeof elements;
   }
 
