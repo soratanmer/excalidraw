@@ -44,8 +44,13 @@ export class History {
     if (!entry.isEmpty()) {
       this.undoStack.push(entry);
 
-      // As a new entry was pushed, we invalidate the redo stack
-      this.redoStack.length = 0;
+      // don't reset redo stack on local appState changes,
+      // as a simple click (unselect) could lead to losing all the redo entries
+      if (!entry.isElementsChangeEmpty()) {
+        // as a new entry was pushed, we invalidate the redo stack
+        this.redoStack.length = 0;
+      }
+
       this.onHistoryChangedEmitter.trigger(
         new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
       );
@@ -77,7 +82,7 @@ export class History {
     let historyEntry = action(elements);
 
     try {
-      // Nothing to undo / redo
+      // nothing to undo / redo
       if (historyEntry === null) {
         return;
       }
@@ -86,7 +91,7 @@ export class History {
       let nextAppState = appState;
       let containsVisibleChange = false;
 
-      // Iterate through the history entries in case they result in no visible changes
+      // iterate through the history entries in case they result in no visible changes
       while (historyEntry) {
         [nextElements, nextAppState, containsVisibleChange] =
           historyEntry.applyTo(nextElements, nextAppState, snapshot);
@@ -100,7 +105,7 @@ export class History {
 
       return [nextElements, nextAppState];
     } finally {
-      // Trigger the history change event before returning completely
+      // trigger the history change event before returning completely
       this.onHistoryChangedEmitter.trigger(
         new HistoryChangedEvent(this.isUndoStackEmpty, this.isRedoStackEmpty),
       );
@@ -196,5 +201,9 @@ export class HistoryEntry {
 
   public isEmpty(): boolean {
     return this.appStateChange.isEmpty() && this.elementsChange.isEmpty();
+  }
+
+  public isElementsChangeEmpty(): boolean {
+    return this.elementsChange.isEmpty();
   }
 }

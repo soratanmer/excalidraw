@@ -871,14 +871,28 @@ const newBoundElements = (
   return nextBoundElements;
 };
 
-type BindingProp = "containerId" | "startBinding" | "endBinding";
+export const bindingProperties: Set<BindingProp | BindableProp> = new Set([
+  "frameId",
+  "containerId",
+  "startBinding",
+  "endBinding",
+  "boundElements",
+]);
+
+export type BindingProp =
+  | "containerId"
+  | "startBinding"
+  | "endBinding"
+  | "frameId";
+
+export type BindableProp = "boundElements";
+
 type BindableElementVisitingFunc = (
   bindableElement: OrderedExcalidrawElement | undefined,
   bindingProperty: BindingProp,
   bindingId: string,
 ) => void;
 
-type BindableProp = "boundElements";
 type BoundElementsVisitingFunc = (
   boundElement: OrderedExcalidrawElement | undefined,
   bindingProperty: BindableProp,
@@ -893,6 +907,8 @@ const bindableElementsVisitor = (
   element: OrderedExcalidrawElement,
   visit: BindableElementVisitingFunc,
 ) => {
+  // frame is purposefully not implemented as it is not bi-directional
+
   if (isBoundToContainer(element)) {
     const id = element.containerId;
     visit(elements.get(id), "containerId", id);
@@ -921,9 +937,11 @@ const boundElementsVisitor = (
 ) => {
   if (isBindableElement(element)) {
     // go in reverse order due to text duplicates ~ last added is the duplicate
-    element.boundElements?.toReversed().forEach(({ id }) => {
-      visit(elements.get(id), "boundElements", id);
-    });
+    Array.prototype.reverse
+      .call(element.boundElements ?? [])
+      .forEach(({ id }) => {
+        visit(elements.get(id), "boundElements", id);
+      });
   }
 };
 
@@ -940,13 +958,8 @@ export class AffectedBoundElements {
       updates: ElementUpdate<OrderedExcalidrawElement>,
     ) => void,
   ) {
-    // operate only on deleted elements
-    if (!element.isDeleted) {
-      return;
-    }
-
     boundElementsVisitor(elements, element, (boundElement) => {
-      // bound element is also deleted, this is fine
+      // bound element is deleted, this is fine
       if (!boundElement || boundElement.isDeleted) {
         return;
       }
@@ -1033,13 +1046,8 @@ export class AffectedBindableElements {
       updates: ElementUpdate<OrderedExcalidrawElement>,
     ) => void,
   ) {
-    // operate only on deleted elements
-    if (!element.isDeleted) {
-      return;
-    }
-
     bindableElementsVisitor(elements, element, (bindableElement) => {
-      // bindable element is also deleted, this is fine
+      // bindable element is deleted, this is fine
       if (!bindableElement || bindableElement.isDeleted) {
         return;
       }
