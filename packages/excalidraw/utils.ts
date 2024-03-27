@@ -677,7 +677,7 @@ export const arrayToObject = <T>(
   predicate?: (value: T) => string,
 ) =>
   array.reduce((acc, value) => {
-    acc[predicate ? predicate(value) : (value as string)] = value;
+    acc[predicate ? predicate(value) : String(value)] = value;
     return acc;
   }, {} as { [key: string]: T });
 
