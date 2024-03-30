@@ -48,7 +48,7 @@ export const createUndoAction: ActionCreator = (history, store) => ({
   perform: (elements, appState) =>
     writeData(appState, () =>
       history.undo(
-        arrayToMap(elements) as SceneElementsMap, // TODO: refactor action manager to already include `SceneElementsMap`
+        arrayToMap(elements) as SceneElementsMap, // TODO: #7348 refactor action manager to already include `SceneElementsMap`
         appState,
         store.snapshot,
       ),
@@ -82,7 +82,7 @@ export const createRedoAction: ActionCreator = (history, store) => ({
   perform: (elements, appState) =>
     writeData(appState, () =>
       history.redo(
-        arrayToMap(elements) as SceneElementsMap, // TODO: refactor action manager to already include `SceneElementsMap`
+        arrayToMap(elements) as SceneElementsMap, // TODO: #7348 refactor action manager to already include `SceneElementsMap`
         appState,
         store.snapshot,
       ),

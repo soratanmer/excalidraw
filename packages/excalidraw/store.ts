@@ -30,7 +30,7 @@ export interface IStore {
   set snapshot(snapshot: Snapshot);
 
   /**
-   * Use to schedule update of the snapshot, useful on updates for which we don't need to calculate increments (i.e. such as remote updates).
+   * Use to schedule update of the snapshot, useful on updates for which we don't need to calculate increments (i.e. remote updates).
    */
   shouldUpdateSnapshot(): void;
 

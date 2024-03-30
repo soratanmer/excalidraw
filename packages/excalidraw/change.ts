@@ -1,7 +1,7 @@
 import { ENV } from "./constants";
 import {
-  AffectedBindableElements,
-  AffectedBoundElements,
+  BoundElement,
+  BindableElement,
   BindableProp,
   BindingProp,
   bindingProperties,
@@ -16,7 +16,11 @@ import {
   getBoundTextElementId,
   redrawTextBoundingBox,
 } from "./element/textElement";
-import { hasBoundTextElement, isBoundToContainer } from "./element/typeChecks";
+import {
+  hasBoundTextElement,
+  isBoundToContainer,
+  isTextElement,
+} from "./element/typeChecks";
 import {
   ExcalidrawLinearElement,
   ExcalidrawTextElement,
@@ -234,9 +238,15 @@ class Delta<T> {
       keys = Object.keys(object1);
     } else if (join === "right") {
       keys = Object.keys(object2);
-    } else {
+    } else if (join === "full") {
       keys = Array.from(
         new Set([...Object.keys(object1), ...Object.keys(object2)]),
+      );
+    } else {
+      assertNever(
+        join,
+        `Unknown distinctKeysIterator's join param "${join}"`,
+        true,
       );
     }
 
@@ -544,7 +554,7 @@ export class AppStateChange implements Change<AppState> {
           break;
         case "editingGroupId":
         case "selectedGroupIds":
-          // TODO: Currently we don't have an index of elements by groupIds, which means that
+          // TODO: #7348 currently we don't have an index of elements by groupIds, which means that
           // the calculation for getting the visible elements based on the groupIds stored in delta
           // is not worth performing - due to perf. and dev. complexity.
           //
@@ -555,7 +565,7 @@ export class AppStateChange implements Change<AppState> {
         default: {
           assertNever(
             key,
-            `Unknown ObservedElementsAppState key "${key}"`,
+            `Unknown ObservedElementsAppState's key "${key}"`,
             true,
           );
         }
@@ -666,8 +676,9 @@ export class ElementsChange implements Change<SceneElementsMap> {
       ElementsChange.validateInvariants(
         "added",
         added,
-        // clement could be inserted as deleted - ignoring "inserted"
-        (deleted, _) => deleted.isDeleted === true,
+        // dissallowing added as "deleted", which could cause issues when resolving conflicts
+        (deleted, inserted) =>
+          deleted.isDeleted === true && inserted.isDeleted === false,
       );
       ElementsChange.validateInvariants(
         "removed",
@@ -844,19 +855,20 @@ export class ElementsChange implements Change<SceneElementsMap> {
         const latestPartial: { [key: string]: unknown } = {};
 
         for (const key of Object.keys(partial) as Array<keyof typeof partial>) {
-          if (
-            key === "boundElements" ||
-            key === "groupIds" ||
-            key === "customData" ||
-            key === "isDeleted"
-          ) {
-            // it doesn't make sense to update the above props since:
-            // - `boundElements` and `groupIds` are reference values which are represented as removed/added changes in the delta
-            // - `customData` can be anything
-            // - `isDeleted` would break the invariants
-            latestPartial[key] = partial[key];
-          } else {
-            latestPartial[key] = element[key];
+          // it doesn't make sense to update the above props since:
+          // - `isDeleted` would break the invariants and would not allow the author to restore his remotely deleted elements
+          // - `boundElements` and `groupIds` are reference values which are represented as removed/added changes in the delta
+          // - `customData` can be anything
+          switch (key) {
+            case "isDeleted":
+            case "boundElements":
+            case "groupIds":
+            case "customData":
+              latestPartial[key] = partial[key];
+              break;
+            default:
+              latestPartial[key] = element[key];
+              break;
           }
         }
 
@@ -920,7 +932,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
       const updatedElements = applyDeltas(this.updated);
       const affectedElements = this.resolveConflicts(elements, nextElements);
 
-      // TODO: validate semantically and syntactically the changed elements, in case they would result data integrity issues
+      // TODO: #7348 validate semantically and syntactically the changed elements, in case they would result data integrity issues
       changedElements = new Map([
         ...addedElements,
         ...removedElements,
@@ -942,7 +954,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
     }
 
     try {
-      // TODO: refactor above mutations away so that we couldn't end up in an incostent state
+      // TODO: #7348 refactor above mutations away so that we couldn't end up in an incosistent state
       ElementsChange.redrawTextBoundingBoxes(nextElements, changedElements);
 
       // the following reorder performs also mutations, but only on new instances of changed elements
@@ -1011,8 +1023,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
         element = snapshot.get(id);
 
         if (element) {
-          // as the element was brought from the snapshot, it automatically results in a possible* zindex difference
-          // *possible as there is additional check down the road at `reorderElements`
+          // as the element was brought from the snapshot, it automatically results in a possible zindex difference
           flags.containsZindexDifference = true;
 
           // as the element was force deleted, we need to check if adding it back results in a visible change
@@ -1151,82 +1162,91 @@ export class ElementsChange implements Change<SceneElementsMap> {
       nextElements.set(affectedElement.id, affectedElement);
     };
 
-    this.unbindAffectedElements(prevElements, nextElements, setter);
-    this.rebindAffectedElements(prevElements, nextElements, setter);
+    // removed delta is affecting the bindings always, as all the affected elements of the removed elements need to be unbound
+    for (const [id] of this.removed) {
+      ElementsChange.unbindAffected(prevElements, nextElements, id, setter);
+    }
+
+    // added delta is affecting the bindings always, all the affected elements of the added elements need to be rebound
+    for (const [id] of this.added) {
+      ElementsChange.rebindAffected(prevElements, nextElements, id, setter);
+    }
+
+    // updated delta is affecting the binding only in case it contains changed binding or bindable property
+    for (const [id] of Array.from(this.updated).filter(([_, delta]) =>
+      Object.keys({ ...delta.deleted, ...delta.inserted }).find((prop) =>
+        bindingProperties.has(prop as BindingProp | BindableProp),
+      ),
+    )) {
+      // skip fixing bindings for updates on deleted elements
+      if (nextElements.get(id)?.isDeleted) {
+        continue;
+      }
+
+      ElementsChange.rebindAffected(prevElements, nextElements, id, setter);
+    }
 
     // technically here we could calculate deltas for affected elements and either:
     // - create a new ElementsChange (aka `git merge`)
-    // - assign the deltas back to `this` change (aka `git rebase`)
+    // - assign the deltas back to respective `this` change deltas (aka `git rebase`)
     return affectedElements;
   }
 
   /**
-   * Non deleted affected elements of removed elements,
-   * should not contain bindings into the removed element/s - make sure to unbind such bindings.
+   * Non deleted affected elements of removed elements (before and after applying delta),
+   * should be unbound ~ bindings should not point from non deleted into the deleted element/s.
    */
-  private unbindAffectedElements(
-    prev: SceneElementsMap,
-    next: SceneElementsMap,
+  private static unbindAffected(
+    prevElements: SceneElementsMap,
+    nextElements: SceneElementsMap,
+    id: string,
     setter: (
       element: OrderedExcalidrawElement,
       updates: ElementUpdate<OrderedExcalidrawElement>,
     ) => void,
   ) {
-    // removed delta is affecting the bindings always, as all the affected elements of the removed elements need to be unbound
-    for (const [id] of this.removed) {
-      // if delta relates to a (bound) element containing bindings `frameId`, `containerId`, `startBinding` or `endBinding`:
-      // - unbind the next affected non deleted bindable elements (removing element id from `boundElements`), to which our element was bound before removal
-      // - unbind the next affected non deleted bindable elements (removing element id from `boundElements`), to which our element was bound after removal
-      AffectedBindableElements.unbind(next, prev.get(id), setter);
-      AffectedBindableElements.unbind(next, next.get(id), setter);
+    // the instance could have been updated, so make sure we are passing the latest element to each function below
+    const prevElement = () => prevElements.get(id); // element before removal
+    const nextElement = () => nextElements.get(id); // element after removal
 
-      // if delta relates to a (bindable) element containing `boundElements`:
-      // - unbind the next affected non deleted bound elements (resetting `containerId`, `startBinding` or `endBinding`), to which our element was bound before removal
-      // - unbind the next affected non deleted bound elements (resetting `containerId`, `startBinding` or `endBinding`), to which our element was bound after removal
-      AffectedBoundElements.unbind(next, prev.get(id), setter);
-      AffectedBoundElements.unbind(next, next.get(id), setter);
-    }
+    BoundElement.unbindAffected(nextElements, prevElement(), setter);
+    BoundElement.unbindAffected(nextElements, nextElement(), setter);
+
+    BindableElement.unbindAffected(nextElements, prevElement(), setter);
+    BindableElement.unbindAffected(nextElements, nextElement(), setter);
   }
 
   /**
-   * Non deleted affected elements of added or updated element/s,
-   * should be rebound (if possible) with the current element - make sure bindings
-   * from such elements into the current element are present & bi-directional.
+   * Non deleted affected elements of added or updated element/s (before and after applying delta),
+   * should be rebound (if possible) with the current element ~ bindings should be bidirectional.
    */
-  private rebindAffectedElements(
-    prev: SceneElementsMap,
-    next: SceneElementsMap,
+  private static rebindAffected(
+    prevElements: SceneElementsMap,
+    nextElements: SceneElementsMap,
+    id: string,
     setter: (
       element: OrderedExcalidrawElement,
       updates: ElementUpdate<OrderedExcalidrawElement>,
     ) => void,
   ) {
-    // added delta is affecting the bindings almost always, except the time when the elements are added as deleted
-    // updated delta is affecting the binding only in case it contains changed binding or bindable property
-    const deltas = [
-      ...Array.from(this.added).filter(
-        ([_, delta]) => !delta.inserted.isDeleted,
-      ),
-      ...Array.from(this.updated).filter(([id, delta]) =>
-        Object.keys({ ...delta.deleted, ...delta.inserted }).find((prop) =>
-          bindingProperties.has(prop as BindingProp | BindableProp),
-        ),
-      ),
-    ];
+    // the instance could have been updated, so make sure we are passing the latest element to each function below
+    const prevElement = () => prevElements.get(id); // element before addition / update
+    const nextElement = () => nextElements.get(id); // element after addition / update
 
-    for (const [id] of deltas) {
-      // if delta modified a bound element containing bindings `frameId`, `containerId`, `startBinding` or `endBinding`:
-      // - unbind the next affected non deleted bindable elements (removing element id from `boundElements`), to which our element was bound before addition / update
-      // - rebind the next affected non deleted bindable elements (adding element id to `boundElements`), to which our element got bound after addition / update (remove when bindable element got deleted or there are conflicts)
-      AffectedBindableElements.unbind(next, prev.get(id), setter);
-      AffectedBindableElements.rebind(next, next.get(id), setter);
+    BoundElement.unbindAffected(nextElements, prevElement(), setter);
+    BoundElement.rebindAffected(nextElements, nextElement(), setter);
 
-      // if delta modified a bindable element containing `boundElements`:
-      // - unbind the next affected non deleted bound elements (resetting only `containerId`), to which our element was bound before addition / update
-      // - rebind the next affected non deleted bound elements (setting only `containerId`), to which our element got bound after addition / update (reset when bound element got deleted or there are conflicts)
-      AffectedBoundElements.unbind(next, prev.get(id), setter, "containerId");
-      AffectedBoundElements.rebind(next, next.get(id), setter);
-    }
+    BindableElement.unbindAffected(
+      nextElements,
+      prevElement(),
+      (element, updates) => {
+        // TODO: #7348 we cannot rebind arrows with bindable element so we don't unbind them at all
+        if (isTextElement(element)) {
+          setter(element, updates);
+        }
+      },
+    );
+    BindableElement.rebindAffected(nextElements, nextElement(), setter);
   }
 
   private static redrawTextBoundingBoxes(
