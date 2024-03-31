@@ -231,6 +231,21 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {
+          "id60" => Delta {
+            "deleted": {
+              "boundElements": [
+                {
+                  "id": "id59",
+                  "type": "text",
+                },
+              ],
+            },
+            "inserted": {
+              "boundElements": [],
+            },
+          },
+        },
         "removed": Map {},
         "updated": Map {
           "id58" => Delta {
@@ -343,7 +358,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "resizingElement": null,
   "scrollX": 0,
   "scrollY": 0,
-  "scrolledOutside": false,
+  "scrolledOutside": true,
   "selectedElementIds": {},
   "selectedElementsAreBeingDragged": false,
   "selectedGroupIds": {},
@@ -373,7 +388,12 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": [],
+  "boundElements": [
+    {
+      "id": "id63",
+      "type": "text",
+    },
+  ],
   "customData": undefined,
   "fillStyle": "solid",
   "frameId": null,
@@ -406,14 +426,14 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": null,
+  "containerId": "id61",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
   "fontSize": 20,
   "frameId": null,
   "groupIds": [],
-  "height": 100,
+  "height": 25,
   "id": "id63",
   "index": "a0V",
   "isDeleted": false,
@@ -433,11 +453,11 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 3,
+  "version": 5,
   "verticalAlign": "top",
-  "width": 100,
-  "x": 0,
-  "y": 0,
+  "width": 30,
+  "x": 15,
+  "y": 15,
 }
 `;
 
@@ -499,11 +519,26 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {
+          "id63" => Delta {
+            "deleted": {
+              "containerId": "id61",
+            },
+            "inserted": {
+              "containerId": null,
+            },
+          },
+        },
         "removed": Map {},
         "updated": Map {
           "id61" => Delta {
             "deleted": {
-              "boundElements": [],
+              "boundElements": [
+                {
+                  "id": "id63",
+                  "type": "text",
+                },
+              ],
             },
             "inserted": {
               "boundElements": [
@@ -706,7 +741,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 3,
+  "version": 5,
   "verticalAlign": "top",
   "width": 100,
   "x": 0,
@@ -746,7 +781,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 8,
+  "version": 10,
   "verticalAlign": "top",
   "width": 80,
   "x": 15,
@@ -772,12 +807,24 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
-          "id64" => Delta {
+        "added": Map {},
+        "affected": Map {
+          "id66" => Delta {
+            "deleted": {},
+            "inserted": {},
+          },
+          "id65" => Delta {
             "deleted": {
-              "isDeleted": true,
+              "containerId": "id64",
             },
             "inserted": {
+              "containerId": null,
+            },
+          },
+        },
+        "removed": Map {
+          "id64" => Delta {
+            "deleted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -803,9 +850,11 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -894,7 +943,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "resizingElement": null,
   "scrollX": 0,
   "scrollY": 0,
-  "scrolledOutside": false,
+  "scrolledOutside": true,
   "selectedElementIds": {},
   "selectedElementsAreBeingDragged": false,
   "selectedGroupIds": {},
@@ -950,7 +999,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 5,
+  "version": 11,
   "width": 100,
   "x": 10,
   "y": 10,
@@ -1009,7 +1058,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "fontSize": 20,
   "frameId": null,
   "groupIds": [],
-  "height": 100,
+  "height": 25,
   "id": "id69",
   "index": "a1",
   "isDeleted": false,
@@ -1029,11 +1078,11 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 2,
+  "version": 9,
   "verticalAlign": "top",
-  "width": 100,
-  "x": 0,
-  "y": 0,
+  "width": 30,
+  "x": 15,
+  "y": 15,
 }
 `;
 
@@ -1055,48 +1104,29 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {
+          "id67" => Delta {
+            "deleted": {},
+            "inserted": {},
+          },
+          "id69" => Delta {
+            "deleted": {},
+            "inserted": {},
+          },
+        },
+        "removed": Map {
           "id68" => Delta {
             "deleted": {
-              "isDeleted": true,
+              "containerId": null,
+              "isDeleted": false,
             },
             "inserted": {
-              "angle": 0,
-              "backgroundColor": "transparent",
-              "boundElements": null,
-              "containerId": null,
-              "customData": undefined,
-              "fillStyle": "solid",
-              "fontFamily": 1,
-              "fontSize": 20,
-              "frameId": null,
-              "groupIds": [],
-              "height": 100,
-              "index": "a0",
-              "isDeleted": false,
-              "lineHeight": 1.25,
-              "link": null,
-              "locked": false,
-              "opacity": 100,
-              "originalText": "que pasa",
-              "roughness": 1,
-              "roundness": {
-                "type": 3,
-              },
-              "strokeColor": "#1e1e1e",
-              "strokeStyle": "solid",
-              "strokeWidth": 2,
-              "text": "que pasa",
-              "textAlign": "left",
-              "type": "text",
-              "verticalAlign": "top",
-              "width": 100,
-              "x": 15,
-              "y": 15,
+              "containerId": "id67",
+              "isDeleted": true,
             },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -1306,6 +1336,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id77" => Delta {
@@ -1531,18 +1562,19 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id74" => Delta {
             "deleted": {
-              "angle": 0,
-              "x": 10,
-              "y": 10,
-            },
-            "inserted": {
               "angle": 90,
               "x": 200,
               "y": 200,
+            },
+            "inserted": {
+              "angle": 0,
+              "x": 10,
+              "y": 10,
             },
           },
         },
@@ -1749,40 +1781,25 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id70" => Delta {
             "deleted": {
-              "isDeleted": true,
+              "boundElements": [],
+              "isDeleted": false,
             },
             "inserted": {
-              "angle": 0,
-              "backgroundColor": "transparent",
-              "boundElements": null,
-              "customData": undefined,
-              "fillStyle": "solid",
-              "frameId": null,
-              "groupIds": [],
-              "height": 100,
-              "index": "a0",
-              "isDeleted": false,
-              "link": null,
-              "locked": false,
-              "opacity": 100,
-              "roughness": 1,
-              "roundness": {
-                "type": 3,
-              },
-              "strokeColor": "#1e1e1e",
-              "strokeStyle": "solid",
-              "strokeWidth": 2,
-              "type": "rectangle",
-              "width": 100,
-              "x": 10,
-              "y": 10,
+              "boundElements": [
+                {
+                  "id": "id71",
+                  "type": "text",
+                },
+              ],
+              "isDeleted": true,
             },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -1992,48 +2009,20 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id73" => Delta {
             "deleted": {
-              "isDeleted": true,
+              "containerId": null,
+              "isDeleted": false,
             },
             "inserted": {
-              "angle": 0,
-              "backgroundColor": "transparent",
-              "boundElements": null,
-              "containerId": null,
-              "customData": undefined,
-              "fillStyle": "solid",
-              "fontFamily": 1,
-              "fontSize": 20,
-              "frameId": null,
-              "groupIds": [],
-              "height": 100,
-              "index": "a0",
-              "isDeleted": false,
-              "lineHeight": 1.25,
-              "link": null,
-              "locked": false,
-              "opacity": 100,
-              "originalText": "que pasa",
-              "roughness": 1,
-              "roundness": {
-                "type": 3,
-              },
-              "strokeColor": "#1e1e1e",
-              "strokeStyle": "solid",
-              "strokeWidth": 2,
-              "text": "que pasa",
-              "textAlign": "left",
-              "type": "text",
-              "verticalAlign": "top",
-              "width": 100,
-              "x": 15,
-              "y": 15,
+              "containerId": "id72",
+              "isDeleted": true,
             },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -2217,7 +2206,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 7,
+  "version": 9,
   "verticalAlign": "top",
   "width": 80,
   "x": 15,
@@ -2272,6 +2261,16 @@ History {
               "width": 100,
               "x": 10,
               "y": 10,
+            },
+          },
+        },
+        "affected": Map {
+          "id55" => Delta {
+            "deleted": {
+              "containerId": null,
+            },
+            "inserted": {
+              "containerId": "id54",
             },
           },
         },
@@ -2421,7 +2420,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 7,
+  "version": 11,
   "width": 100,
   "x": 10,
   "y": 10,
@@ -2486,12 +2485,25 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
-          "id57" => Delta {
+        "added": Map {},
+        "affected": Map {
+          "id56" => Delta {
             "deleted": {
-              "isDeleted": true,
+              "boundElements": [
+                {
+                  "id": "id57",
+                  "type": "text",
+                },
+              ],
             },
             "inserted": {
+              "boundElements": [],
+            },
+          },
+        },
+        "removed": Map {
+          "id57" => Delta {
+            "deleted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -2525,9 +2537,11 @@ History {
               "x": 15,
               "y": 15,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -2691,6 +2705,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id27" => Delta {
@@ -2710,22 +2725,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id27": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id27" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "#ffec99",
               "boundElements": null,
@@ -2751,9 +2765,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -2911,22 +2927,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id28": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id28" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "#ffec99",
               "boundElements": null,
@@ -2952,9 +2967,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -2962,27 +2979,28 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
+            "selectedElementIds": {},
+          },
+          "inserted": {
             "selectedElementIds": {
               "id28": true,
             },
           },
-          "inserted": {
-            "selectedElementIds": {},
-          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {
+        "added": Map {
           "id28" => Delta {
             "deleted": {
-              "isDeleted": false,
+              "isDeleted": true,
             },
             "inserted": {
-              "isDeleted": true,
+              "isDeleted": false,
             },
           },
         },
+        "affected": Map {},
+        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -3208,22 +3226,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id29": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id29" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -3249,9 +3266,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -3260,23 +3279,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id29": true,
+              "id30": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id30": true,
+              "id29": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id30" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "#ffc9c9",
               "boundElements": null,
@@ -3302,9 +3320,11 @@ History {
               "x": 20,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -3317,6 +3337,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id30" => Delta {
@@ -3335,23 +3356,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id30": true,
+              "id31": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id31": true,
+              "id30": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id31" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "#ffc9c9",
               "boundElements": null,
@@ -3377,9 +3397,11 @@ History {
               "x": 50,
               "y": 50,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -3392,6 +3414,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id31" => Delta {
@@ -3630,22 +3653,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id33": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id33" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -3671,12 +3693,12 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
           "id34" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -3702,12 +3724,12 @@ History {
               "x": 20,
               "y": 20,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
           "id35" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -3733,9 +3755,11 @@ History {
               "x": 30,
               "y": 30,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -3743,19 +3767,20 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {
-              "id33": true,
-            },
-          },
-          "inserted": {
             "selectedElementIds": {
               "id34": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {
+              "id33": true,
+            },
+          },
         },
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -3764,17 +3789,18 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id35": true,
             },
+          },
+          "inserted": {
+            "selectedElementIds": {},
           },
         },
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -3999,22 +4025,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id40": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id39" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -4040,12 +4065,12 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
           "id40" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -4071,12 +4096,12 @@ History {
               "x": 20,
               "y": 20,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
           "id41" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -4102,9 +4127,11 @@ History {
               "x": 30,
               "y": 30,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -4117,6 +4144,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id40" => Delta {
@@ -4354,22 +4382,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id48": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id48" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -4395,9 +4422,11 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -4406,23 +4435,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id48": true,
+              "id49": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id49": true,
+              "id48": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id49" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -4448,9 +4476,11 @@ History {
               "x": 30,
               "y": 30,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -4458,29 +4488,10 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {
-              "id49": true,
-            },
-          },
-          "inserted": {
             "selectedElementIds": {
               "id48": true,
             },
           },
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {},
-        "updated": Map {},
-      },
-    },
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {
-            "selectedElementIds": {},
-          },
           "inserted": {
             "selectedElementIds": {
               "id49": true,
@@ -4490,6 +4501,27 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedElementIds": {
+              "id49": true,
+            },
+          },
+          "inserted": {
+            "selectedElementIds": {},
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -4503,26 +4535,27 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id48" => Delta {
             "deleted": {
-              "x": 10,
-              "y": 10,
-            },
-            "inserted": {
               "x": 90,
               "y": 90,
+            },
+            "inserted": {
+              "x": 10,
+              "y": 10,
             },
           },
           "id49" => Delta {
             "deleted": {
-              "x": 30,
-              "y": 30,
-            },
-            "inserted": {
               "x": 110,
               "y": 110,
+            },
+            "inserted": {
+              "x": 30,
+              "y": 30,
             },
           },
         },
@@ -4745,12 +4778,11 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id43" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -4803,9 +4835,11 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -4997,22 +5031,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id45": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id45" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -5038,9 +5071,11 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -5053,16 +5088,17 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id45" => Delta {
             "deleted": {
-              "height": 10,
-              "width": 10,
-            },
-            "inserted": {
               "height": 90,
               "width": 90,
+            },
+            "inserted": {
+              "height": 10,
+              "width": 10,
             },
           },
         },
@@ -5260,6 +5296,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id23" => Delta {
@@ -5279,22 +5316,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id23": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id23" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -5320,9 +5356,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -5482,22 +5520,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id25": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id25" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -5523,9 +5560,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -5538,14 +5577,15 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id25" => Delta {
             "deleted": {
-              "backgroundColor": "transparent",
+              "backgroundColor": "#ffc9c9",
             },
             "inserted": {
-              "backgroundColor": "#ffc9c9",
+              "backgroundColor": "transparent",
             },
           },
         },
@@ -5711,6 +5751,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id26" => Delta {
@@ -5733,6 +5774,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id26" => Delta {
@@ -5752,22 +5794,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id26": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id26" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -5793,9 +5834,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -5987,22 +6030,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id18": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id18" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -6028,9 +6070,11 @@ History {
               "x": 20,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -6222,20 +6266,28 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "viewBackgroundColor": "#FFF",
+            "viewBackgroundColor": "#000",
           },
           "inserted": {
-            "viewBackgroundColor": "#000",
+            "viewBackgroundColor": "#FFF",
           },
         },
       },
       "elementsChange": ElementsChange {
         "added": Map {
-          "B" => Delta {
+          "A" => Delta {
             "deleted": {
               "isDeleted": true,
             },
             "inserted": {
+              "isDeleted": false,
+            },
+          },
+        },
+        "affected": Map {},
+        "removed": Map {
+          "B" => Delta {
+            "deleted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": [],
@@ -6259,13 +6311,6 @@ History {
               "width": 100,
               "x": 0,
               "y": 0,
-            },
-          },
-        },
-        "removed": Map {
-          "A" => Delta {
-            "deleted": {
-              "isDeleted": false,
             },
             "inserted": {
               "isDeleted": true,
@@ -6463,22 +6508,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id1": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id1" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -6504,9 +6548,11 @@ History {
               "x": 0,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -6698,22 +6744,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id19": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id19" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -6739,8 +6784,30 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedElementIds": {},
+          },
+          "inserted": {
+            "selectedElementIds": {
+              "id19": true,
+            },
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -6760,6 +6827,7 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -6768,43 +6836,23 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
-            "selectedElementIds": {
-              "id19": true,
-            },
-          },
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {},
-        "updated": Map {},
-      },
-    },
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {
-            "selectedElementIds": {
-              "id19": true,
-            },
-          },
-          "inserted": {
             "selectedElementIds": {
               "id20": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {
+              "id19": true,
+            },
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id20" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -6830,9 +6878,11 @@ History {
               "x": 20,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -7163,10 +7213,6 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-            "selectedGroupIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id4": true,
               "id5": true,
@@ -7175,15 +7221,18 @@ History {
               "A": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+            "selectedGroupIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id4" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7211,12 +7260,12 @@ History {
               "x": 0,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
           "id5" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7244,9 +7293,11 @@ History {
               "x": 0,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -7255,15 +7306,6 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id4": true,
-              "id5": true,
-            },
-            "selectedGroupIds": {
-              "A": true,
-            },
-          },
-          "inserted": {
-            "selectedElementIds": {
               "id4_copy_copy": true,
               "id5_copy_copy": true,
             },
@@ -7271,15 +7313,23 @@ History {
               "A_copy": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {
+              "id4": true,
+              "id5": true,
+            },
+            "selectedGroupIds": {
+              "A": true,
+            },
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id4_copy_copy" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7307,12 +7357,12 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
           "id5_copy_copy" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7340,9 +7390,11 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -7566,22 +7618,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id7": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id7" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7607,9 +7658,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -7618,23 +7671,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id7": true,
+              "id8": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id8": true,
+              "id7": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id8" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7660,9 +7712,11 @@ History {
               "x": 20,
               "y": 20,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -7671,23 +7725,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id8": true,
+              "id9": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id9": true,
+              "id8": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id9" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -7713,86 +7766,91 @@ History {
               "x": 40,
               "y": 40,
             },
-          },
-        },
-        "removed": Map {},
-        "updated": Map {},
-      },
-    },
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {
-            "selectedElementIds": {
-              "id9": true,
-            },
-          },
-          "inserted": {
-            "selectedElementIds": {
-              "id8": true,
-            },
-          },
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {},
-        "updated": Map {},
-      },
-    },
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
-            "selectedElementIds": {
-              "id9": true,
-            },
-          },
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {},
-        "updated": Map {},
-      },
-    },
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {
-            "selectedElementIds": {
-              "id8": true,
-              "id9": true,
-            },
-          },
-          "inserted": {
-            "selectedElementIds": {},
-          },
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {
-          "id8" => Delta {
-            "deleted": {
-              "isDeleted": false,
-            },
             "inserted": {
               "isDeleted": true,
+            },
+          },
+        },
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedElementIds": {
+              "id8": true,
+            },
+          },
+          "inserted": {
+            "selectedElementIds": {
+              "id9": true,
+            },
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedElementIds": {
+              "id9": true,
+            },
+          },
+          "inserted": {
+            "selectedElementIds": {},
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedElementIds": {},
+          },
+          "inserted": {
+            "selectedElementIds": {
+              "id8": true,
+              "id9": true,
+            },
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {
+          "id8" => Delta {
+            "deleted": {
+              "isDeleted": true,
+            },
+            "inserted": {
+              "isDeleted": false,
             },
           },
           "id9" => Delta {
             "deleted": {
-              "isDeleted": false,
+              "isDeleted": true,
             },
             "inserted": {
-              "isDeleted": true,
+              "isDeleted": false,
             },
           },
         },
+        "affected": Map {},
+        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -8019,22 +8077,21 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {},
-          },
-          "inserted": {
             "selectedElementIds": {
               "id12": true,
             },
           },
+          "inserted": {
+            "selectedElementIds": {},
+          },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id12" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -8060,9 +8117,11 @@ History {
               "x": 10,
               "y": 0,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -8071,23 +8130,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id12": true,
+              "id13": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id13": true,
+              "id12": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id13" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -8113,9 +8171,11 @@ History {
               "x": 20,
               "y": 20,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -8124,23 +8184,22 @@ History {
         "delta": Delta {
           "deleted": {
             "selectedElementIds": {
-              "id13": true,
+              "id14": true,
             },
           },
           "inserted": {
             "selectedElementIds": {
-              "id14": true,
+              "id13": true,
             },
           },
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
+        "added": Map {},
+        "affected": Map {},
+        "removed": Map {
           "id14" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -8166,9 +8225,11 @@ History {
               "x": 40,
               "y": 40,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "removed": Map {},
         "updated": Map {},
       },
     },
@@ -8181,14 +8242,15 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id14" => Delta {
             "deleted": {
-              "index": "a2",
+              "index": "a0V",
             },
             "inserted": {
-              "index": "a0V",
+              "index": "a2",
             },
           },
         },
@@ -8198,29 +8260,10 @@ History {
       "appStateChange": AppStateChange {
         "delta": Delta {
           "deleted": {
-            "selectedElementIds": {
-              "id14": true,
-            },
-          },
-          "inserted": {
             "selectedElementIds": {
               "id12": true,
             },
           },
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "removed": Map {},
-        "updated": Map {},
-      },
-    },
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {
-            "selectedElementIds": {},
-          },
           "inserted": {
             "selectedElementIds": {
               "id14": true,
@@ -8230,6 +8273,27 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
+        "removed": Map {},
+        "updated": Map {},
+      },
+    },
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {
+            "selectedElementIds": {
+              "id14": true,
+            },
+          },
+          "inserted": {
+            "selectedElementIds": {},
+          },
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -8243,22 +8307,23 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
+        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id12" => Delta {
             "deleted": {
-              "index": "a0",
+              "index": "a2",
             },
             "inserted": {
-              "index": "a2",
+              "index": "a0",
             },
           },
           "id14" => Delta {
             "deleted": {
-              "index": "a0V",
+              "index": "a3",
             },
             "inserted": {
-              "index": "a3",
+              "index": "a0V",
             },
           },
         },

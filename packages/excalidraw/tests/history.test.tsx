@@ -1787,6 +1787,27 @@ describe("history", () => {
             isDeleted: false,
           }),
         ]);
+
+        Keyboard.undo();
+        expect(API.getUndoStack().length).toBe(0);
+        expect(API.getRedoStack().length).toBe(1);
+        expect(h.elements).toEqual([
+          expect.objectContaining({
+            id: container.id,
+            boundElements: [],
+            isDeleted: false,
+          }),
+          expect.objectContaining({
+            id: remoteContainer.id,
+            boundElements: [{ id: text.id, type: "text" }],
+            isDeleted: false,
+          }),
+          expect.objectContaining({
+            id: text.id,
+            containerId: remoteContainer.id,
+            isDeleted: false,
+          }),
+        ]);
       });
 
       it("should override remotely bound text to container when restoring bidirectionally bound text through the history", async () => {
@@ -1865,19 +1886,18 @@ describe("history", () => {
           }),
         ]);
 
-        // TODO: #7348 we cannot easily restore the binding in `boundElements`, could be solved by separating text bindings into a standalone `boundTextId` prop
         Keyboard.undo();
         expect(API.getUndoStack().length).toBe(0);
         expect(API.getRedoStack().length).toBe(1);
         expect(h.elements).toEqual([
           expect.objectContaining({
             id: container.id,
-            boundElements: [],
+            boundElements: [{ id: remoteText.id, type: "text" }],
             isDeleted: false,
           }),
           expect.objectContaining({
             id: remoteText.id,
-            containerId: null,
+            containerId: container.id,
             isDeleted: false,
           }),
           expect.objectContaining({
@@ -1932,6 +1952,7 @@ describe("history", () => {
           elements: [
             newElementWith(h.elements[0], {
               boundElements: [{ id: text.id, type: "text" }],
+              isDeleted: false,
             }),
             h.elements[1],
             // rebinding the container with a new text element!
@@ -2108,7 +2129,7 @@ describe("history", () => {
           }),
           expect.objectContaining({
             id: text.id,
-            containerId: null,
+            containerId: container.id,
             isDeleted: true,
           }),
           expect.objectContaining({
@@ -2193,14 +2214,14 @@ describe("history", () => {
           }),
         ]);
 
-        // Double-check that we end up in the same state after series of undo / redo
+        // // Double-check that we end up in the same state after series of undo / redo
         Keyboard.undo();
         expect(API.getUndoStack().length).toBe(0);
         expect(API.getRedoStack().length).toBe(1);
         expect(h.elements).toEqual([
           expect.objectContaining({
             id: container.id,
-            boundElements: [],
+            boundElements: [{ id: text.id, type: "text" }],
             isDeleted: true,
           }),
           expect.objectContaining({
@@ -2292,8 +2313,7 @@ describe("history", () => {
           }),
           expect.objectContaining({
             id: text.id,
-            // latest change is applied, keeping null!
-            containerId: null,
+            containerId: container.id,
             isDeleted: true,
           }),
         ]);
@@ -2463,6 +2483,8 @@ describe("history", () => {
           ],
         });
 
+        expect(API.getUndoStack().length).toBe(0);
+        expect(API.getRedoStack().length).toBe(1);
         expect(h.elements).toEqual([
           expect.objectContaining({
             ...containerProps,

@@ -4,6 +4,8 @@ import { Emitter } from "./emitter";
 import { Snapshot } from "./store";
 import { AppState } from "./types";
 
+type HistoryStack = HistoryEntry[];
+
 export class HistoryChangedEvent {
   constructor(
     public readonly isUndoStackEmpty: boolean = true,
@@ -16,8 +18,8 @@ export class History {
     [HistoryChangedEvent]
   >();
 
-  private readonly undoStack: HistoryEntry[] = [];
-  private readonly redoStack: HistoryEntry[] = [];
+  private readonly undoStack: HistoryStack = [];
+  private readonly redoStack: HistoryStack = [];
 
   public get isUndoStackEmpty() {
     return this.undoStack.length === 0;
@@ -39,7 +41,10 @@ export class History {
     elementsChange: ElementsChange,
     appStateChange: AppStateChange,
   ) {
-    const entry = HistoryEntry.create(appStateChange, elementsChange);
+    const entry = HistoryEntry.create(
+      appStateChange.inverse(),
+      elementsChange.inverse(),
+    );
 
     if (!entry.isEmpty()) {
       this.undoStack.push(entry);
@@ -62,7 +67,13 @@ export class History {
     appState: AppState,
     snapshot: Readonly<Snapshot>,
   ) {
-    return this.perform(this.undoOnce.bind(this), elements, appState, snapshot);
+    return this.perform(
+      elements,
+      appState,
+      snapshot,
+      () => History.pop(this.undoStack),
+      (entry: HistoryEntry) => History.push(this.redoStack, entry, elements),
+    );
   }
 
   public redo(
@@ -70,19 +81,25 @@ export class History {
     appState: AppState,
     snapshot: Readonly<Snapshot>,
   ) {
-    return this.perform(this.redoOnce.bind(this), elements, appState, snapshot);
+    return this.perform(
+      elements,
+      appState,
+      snapshot,
+      () => History.pop(this.redoStack),
+      (entry: HistoryEntry) => History.push(this.undoStack, entry, elements),
+    );
   }
 
   private perform(
-    action: typeof this.undoOnce | typeof this.redoOnce,
     elements: SceneElementsMap,
     appState: AppState,
     snapshot: Readonly<Snapshot>,
+    pop: () => HistoryEntry | null,
+    push: (entry: HistoryEntry) => void,
   ): [SceneElementsMap, AppState] | void {
-    let historyEntry = action(elements);
-
     try {
-      // nothing to undo / redo
+      let historyEntry = pop();
+
       if (historyEntry === null) {
         return;
       }
@@ -93,14 +110,18 @@ export class History {
 
       // iterate through the history entries in case they result in no visible changes
       while (historyEntry) {
-        [nextElements, nextAppState, containsVisibleChange] =
-          historyEntry.applyTo(nextElements, nextAppState, snapshot);
+        try {
+          [nextElements, nextAppState, containsVisibleChange] =
+            historyEntry.applyTo(nextElements, nextAppState, snapshot);
+        } finally {
+          push(historyEntry);
+        }
 
         if (containsVisibleChange) {
           break;
         }
 
-        historyEntry = action(elements);
+        historyEntry = pop();
       }
 
       return [nextElements, nextAppState];
@@ -112,38 +133,27 @@ export class History {
     }
   }
 
-  private undoOnce(elements: SceneElementsMap): HistoryEntry | null {
-    if (!this.undoStack.length) {
+  private static pop(stack: HistoryStack): HistoryEntry | null {
+    if (!stack.length) {
       return null;
     }
 
-    const undoEntry = this.undoStack.pop();
+    const entry = stack.pop();
 
-    if (undoEntry !== undefined) {
-      const redoEntry = undoEntry.applyLatestChanges(elements, "inserted");
-      this.redoStack.push(redoEntry);
-
-      return undoEntry.inverse();
+    if (entry !== undefined) {
+      return entry;
     }
 
     return null;
   }
 
-  private redoOnce(elements: SceneElementsMap): HistoryEntry | null {
-    if (!this.redoStack.length) {
-      return null;
-    }
-
-    const redoEntry = this.redoStack.pop();
-
-    if (redoEntry !== undefined) {
-      const undoEntry = redoEntry.applyLatestChanges(elements, "deleted");
-      this.undoStack.push(undoEntry);
-
-      return redoEntry;
-    }
-
-    return null;
+  private static push(
+    stack: HistoryStack,
+    entry: HistoryEntry,
+    prevElements: SceneElementsMap,
+  ) {
+    const updatedEntry = entry.inverse().applyLatestChanges(prevElements);
+    return stack.push(updatedEntry);
   }
 }
 
@@ -187,14 +197,9 @@ export class HistoryEntry {
   /**
    * Apply latest (remote) changes to the history entry, creates new instance of `HistoryEntry`.
    */
-  public applyLatestChanges(
-    elements: SceneElementsMap,
-    modifierOptions: "deleted" | "inserted",
-  ): HistoryEntry {
-    const updatedElementsChange = this.elementsChange.applyLatestChanges(
-      elements,
-      modifierOptions,
-    );
+  public applyLatestChanges(elements: SceneElementsMap): HistoryEntry {
+    const updatedElementsChange =
+      this.elementsChange.applyLatestChanges(elements);
 
     return HistoryEntry.create(this.appStateChange, updatedElementsChange);
   }
