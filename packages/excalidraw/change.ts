@@ -5,6 +5,7 @@ import {
   BindableProp,
   BindingProp,
   bindingProperties,
+  updateBoundElements,
 } from "./element/binding";
 import { LinearElementEditor } from "./element/linearElementEditor";
 import {
@@ -18,10 +19,12 @@ import {
 } from "./element/textElement";
 import {
   hasBoundTextElement,
+  isBindableElement,
   isBoundToContainer,
   isTextElement,
 } from "./element/typeChecks";
 import {
+  ExcalidrawElement,
   ExcalidrawLinearElement,
   ExcalidrawTextElement,
   NonDeleted,
@@ -665,14 +668,12 @@ export class ElementsChange implements Change<SceneElementsMap> {
     private readonly added: Map<string, Delta<ElementPartial>>,
     private readonly removed: Map<string, Delta<ElementPartial>>,
     private readonly updated: Map<string, Delta<ElementPartial>>,
-    private affected: Map<string, Delta<ElementPartial>>, //  filled after applying the deltas
   ) {}
 
   public static create(
     added: Map<string, Delta<ElementPartial>>,
     removed: Map<string, Delta<ElementPartial>>,
     updated: Map<string, Delta<ElementPartial>>,
-    affected: Map<string, Delta<ElementPartial>>,
   ) {
     if (import.meta.env.DEV || import.meta.env.MODE === ENV.TEST) {
       ElementsChange.validateInvariants(
@@ -695,7 +696,7 @@ export class ElementsChange implements Change<SceneElementsMap> {
       );
     }
 
-    return new ElementsChange(added, removed, updated, affected);
+    return new ElementsChange(added, removed, updated);
   }
 
   private static validateInvariants(
@@ -807,11 +808,11 @@ export class ElementsChange implements Change<SceneElementsMap> {
       }
     }
 
-    return ElementsChange.create(added, removed, updated, new Map());
+    return ElementsChange.create(added, removed, updated);
   }
 
   public static empty() {
-    return ElementsChange.create(new Map(), new Map(), new Map(), new Map());
+    return ElementsChange.create(new Map(), new Map(), new Map());
   }
 
   public inverse(): ElementsChange {
@@ -828,18 +829,16 @@ export class ElementsChange implements Change<SceneElementsMap> {
     const added = inverseInternal(this.added);
     const removed = inverseInternal(this.removed);
     const updated = inverseInternal(this.updated);
-    const affected = inverseInternal(this.affected);
 
     // notice we inverse removed with added not to break the invariants
-    return ElementsChange.create(removed, added, updated, affected);
+    return ElementsChange.create(removed, added, updated);
   }
 
   public isEmpty(): boolean {
     return (
       this.added.size === 0 &&
       this.removed.size === 0 &&
-      this.updated.size === 0 &&
-      this.affected.size === 0
+      this.updated.size === 0
     );
   }
 
@@ -904,9 +903,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
     const added = applyLatestChangesInternal(this.added);
     const removed = applyLatestChangesInternal(this.removed);
     const updated = applyLatestChangesInternal(this.updated);
-    const affected = applyLatestChangesInternal(this.affected);
 
-    return ElementsChange.create(added, removed, updated, affected);
+    return ElementsChange.create(added, removed, updated);
   }
 
   public applyTo(
@@ -932,9 +930,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
       const addedElements = applyDeltas(this.added);
       const removedElements = applyDeltas(this.removed);
       const updatedElements = applyDeltas(this.updated);
-      const affectedElements = applyDeltas(this.affected);
 
-      const resolvedElements = this.resolveConflicts(elements, nextElements);
+      const affectedElements = this.resolveConflicts(elements, nextElements);
 
       // TODO: #7348 validate semantically and syntactically the changed elements, in case they would result data integrity issues
       changedElements = new Map([
@@ -942,7 +939,6 @@ export class ElementsChange implements Change<SceneElementsMap> {
         ...removedElements,
         ...updatedElements,
         ...affectedElements,
-        ...resolvedElements,
       ]);
     } catch (e) {
       console.error(`Couldn't apply elements change`, e);
@@ -959,8 +955,9 @@ export class ElementsChange implements Change<SceneElementsMap> {
     }
 
     try {
-      // TODO: #7348 refactor below mutations away so that we couldn't end up in an incosistent state
+      // TODO: #7348 refactor away mutations below, so that we couldn't end up in an incosistent state
       ElementsChange.redrawTextBoundingBoxes(nextElements, changedElements);
+      ElementsChange.redrawBoundArrows(nextElements, changedElements);
 
       // the following reorder performs also mutations, but only on new instances of changed elements
       // (unless something goes really bad and it fallbacks to fixing all invalid indices)
@@ -1132,8 +1129,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
   }
 
   /**
-   * Resolves conflicts for all previously added, removed, updated and affected elements.
-   * Rebases (mutates) previous deltas with resolved values.
+   * Resolves conflicts for all previously added, removed and updated elements.
+   * Updates the previous deltas with all the changes after conflict resolution.
    *
    * @returns all elements affected by the conflict resolution
    */
@@ -1141,27 +1138,34 @@ export class ElementsChange implements Change<SceneElementsMap> {
     prevElements: SceneElementsMap,
     nextElements: SceneElementsMap,
   ) {
-    const elements = new Map<string, OrderedExcalidrawElement>();
+    const nextAffectedElements = new Map<string, OrderedExcalidrawElement>();
     const updater = (
-      element: OrderedExcalidrawElement,
-      updates: ElementUpdate<OrderedExcalidrawElement>,
+      element: ExcalidrawElement,
+      updates: ElementUpdate<ExcalidrawElement>,
     ) => {
       const nextElement = nextElements.get(element.id); // only ever modify next element!
       if (!nextElement) {
         return;
       }
 
-      let updatedElement: OrderedExcalidrawElement;
+      let affectedElement: OrderedExcalidrawElement;
+
       if (prevElements.get(element.id) === nextElement) {
         // create the new element instance in case we didn't modify the element yet
         // so that we won't end up in an incosistent state in case we would fail in the middle of mutations
-        updatedElement = newElementWith(nextElement, updates);
+        affectedElement = newElementWith(
+          nextElement,
+          updates as ElementUpdate<OrderedExcalidrawElement>,
+        );
       } else {
-        updatedElement = mutateElement(nextElement, updates);
+        affectedElement = mutateElement(
+          nextElement,
+          updates as ElementUpdate<OrderedExcalidrawElement>,
+        );
       }
 
-      elements.set(updatedElement.id, updatedElement);
-      nextElements.set(updatedElement.id, updatedElement);
+      nextAffectedElements.set(affectedElement.id, affectedElement);
+      nextElements.set(affectedElement.id, affectedElement);
     };
 
     // removed delta is affecting the bindings always, as all the affected elements of the removed elements need to be unbound
@@ -1175,58 +1179,44 @@ export class ElementsChange implements Change<SceneElementsMap> {
     }
 
     // updated delta is affecting the binding only in case it contains changed binding or bindable property
-    const updatedAffecting = Array.from(this.updated).filter(([_, delta]) =>
+    for (const [id] of Array.from(this.updated).filter(([_, delta]) =>
       Object.keys({ ...delta.deleted, ...delta.inserted }).find((prop) =>
         bindingProperties.has(prop as BindingProp | BindableProp),
       ),
+    )) {
+      const updatedElement = nextElements.get(id);
+      if (!updatedElement || updatedElement.isDeleted) {
+        // skip fixing bindings for updates on deleted elements
+        continue;
+      }
+
+      ElementsChange.rebindAffected(prevElements, nextElements, id, updater);
+    }
+
+    // filter only previous elements, which were now affected
+    const prevAffectedElements = new Map(
+      Array.from(prevElements).filter(([id]) => nextAffectedElements.has(id)),
     );
-    for (const [id] of updatedAffecting) {
-      // skip fixing bindings for updates on deleted elements
-      if (nextElements.get(id)?.isDeleted) {
-        continue;
-      }
 
-      ElementsChange.rebindAffected(prevElements, nextElements, id, updater);
+    // calculate complete deltas for affected elements, and assign them back to all the deltas
+    const { added, removed, updated } = ElementsChange.calculate(
+      prevAffectedElements,
+      nextAffectedElements,
+    );
+
+    for (const [id, delta] of added) {
+      this.added.set(id, delta);
     }
 
-    for (const [id] of this.affected) {
-      ElementsChange.rebindAffected(prevElements, nextElements, id, updater);
+    for (const [id, delta] of removed) {
+      this.removed.set(id, delta);
     }
 
-    this.rebaseDeltas(prevElements, elements);
-
-    return elements;
-  }
-
-  private rebaseDeltas(
-    prevElements: SceneElementsMap,
-    nextElements: Map<string, OrderedExcalidrawElement>,
-  ) {
-    for (const [id, nextElement] of nextElements) {
-      const prevElement = prevElements.get(id);
-
-      if (!prevElement) {
-        continue;
-      }
-
-      const delta = Delta.calculate<ElementPartial>(
-        prevElement,
-        nextElement,
-        ElementsChange.stripIrrelevantProps,
-        ElementsChange.postProcess,
-      );
-
-      // assign the updated deltas back (aka `git rebase`)
-      if (this.added.has(id)) {
-        this.added.set(id, delta);
-      } else if (this.removed.has(id)) {
-        this.removed.set(id, delta);
-      } else if (this.updated.has(id)) {
-        this.updated.set(id, delta);
-      } else {
-        this.affected.set(id, delta);
-      }
+    for (const [id, delta] of updated) {
+      this.updated.set(id, delta);
     }
+
+    return nextAffectedElements;
   }
 
   /**
@@ -1238,8 +1228,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
     nextElements: SceneElementsMap,
     id: string,
     updater: (
-      element: OrderedExcalidrawElement,
-      updates: ElementUpdate<OrderedExcalidrawElement>,
+      element: ExcalidrawElement,
+      updates: ElementUpdate<ExcalidrawElement>,
     ) => void,
   ) {
     // the instance could have been updated, so make sure we are passing the latest element to each function below
@@ -1262,8 +1252,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
     nextElements: SceneElementsMap,
     id: string,
     updater: (
-      element: OrderedExcalidrawElement,
-      updates: ElementUpdate<OrderedExcalidrawElement>,
+      element: ExcalidrawElement,
+      updates: ElementUpdate<ExcalidrawElement>,
     ) => void,
   ) {
     // the instance could have been updated, so make sure we are passing the latest element to each function below
@@ -1277,7 +1267,8 @@ export class ElementsChange implements Change<SceneElementsMap> {
       nextElements,
       prevElement(),
       (element, updates) => {
-        // TODO: #7348 we cannot rebind arrows with bindable element so we don't unbind them at all
+        // we cannot rebind arrows with bindable element so we don't unbind them at all during rebind (we still need to unbind them on removal)
+        // TODO: #7348 add startBinding / endBinding to the `BoundElement` context so that we could rebind arrows and remove this condition
         if (isTextElement(element)) {
           updater(element, updates);
         }
@@ -1330,6 +1321,17 @@ export class ElementsChange implements Change<SceneElementsMap> {
       }
 
       redrawTextBoundingBox(boundText, container, elements, false);
+    }
+  }
+
+  private static redrawBoundArrows(
+    elements: SceneElementsMap,
+    changed: Map<string, OrderedExcalidrawElement>,
+  ) {
+    for (const element of changed.values()) {
+      if (!element.isDeleted && isBindableElement(element)) {
+        updateBoundElements(element, elements);
+      }
     }
   }
 

@@ -1,5 +1,278 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] appState 1`] = `
+{
+  "activeEmbeddable": null,
+  "activeTool": {
+    "customType": null,
+    "lastActiveTool": null,
+    "locked": false,
+    "type": "selection",
+  },
+  "collaborators": Map {},
+  "contextMenu": null,
+  "currentChartType": "bar",
+  "currentItemBackgroundColor": "transparent",
+  "currentItemEndArrowhead": "arrow",
+  "currentItemFillStyle": "solid",
+  "currentItemFontFamily": 1,
+  "currentItemFontSize": 20,
+  "currentItemOpacity": 100,
+  "currentItemRoughness": 1,
+  "currentItemRoundness": "round",
+  "currentItemStartArrowhead": null,
+  "currentItemStrokeColor": "#1e1e1e",
+  "currentItemStrokeStyle": "solid",
+  "currentItemStrokeWidth": 2,
+  "currentItemTextAlign": "left",
+  "cursorButton": "up",
+  "defaultSidebarDockedPreference": false,
+  "draggingElement": null,
+  "editingElement": null,
+  "editingFrame": null,
+  "editingGroupId": null,
+  "editingLinearElement": null,
+  "elementsToHighlight": null,
+  "errorMessage": null,
+  "exportBackground": true,
+  "exportEmbedScene": false,
+  "exportScale": 1,
+  "exportWithDarkMode": false,
+  "fileHandle": null,
+  "followedBy": Set {},
+  "frameRendering": {
+    "clip": true,
+    "enabled": true,
+    "name": true,
+    "outline": true,
+  },
+  "frameToHighlight": null,
+  "gridSize": null,
+  "height": 0,
+  "isBindingEnabled": true,
+  "isLoading": false,
+  "isResizing": false,
+  "isRotating": false,
+  "lastPointerDownWith": "mouse",
+  "multiElement": null,
+  "objectsSnapModeEnabled": false,
+  "offsetLeft": 0,
+  "offsetTop": 0,
+  "openDialog": null,
+  "openMenu": null,
+  "openPopup": null,
+  "openSidebar": null,
+  "originSnapOffset": {
+    "x": 0,
+    "y": 0,
+  },
+  "pasteDialog": {
+    "data": null,
+    "shown": false,
+  },
+  "penDetected": false,
+  "penMode": false,
+  "pendingImageElementId": null,
+  "previousSelectedElementIds": {},
+  "resizingElement": null,
+  "scrollX": 0,
+  "scrollY": 0,
+  "scrolledOutside": true,
+  "selectedElementIds": {},
+  "selectedElementsAreBeingDragged": false,
+  "selectedGroupIds": {},
+  "selectedLinearElement": null,
+  "selectionElement": null,
+  "shouldCacheIgnoreZoom": false,
+  "showHyperlinkPopup": false,
+  "showStats": false,
+  "showWelcomeScreen": true,
+  "snapLines": [],
+  "startBoundElement": null,
+  "suggestedBindings": [],
+  "theme": "light",
+  "toast": null,
+  "userToFollow": null,
+  "viewBackgroundColor": "#ffffff",
+  "viewModeEnabled": false,
+  "width": 0,
+  "zenModeEnabled": false,
+  "zoom": {
+    "value": 1,
+  },
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] element 0 1`] = `
+{
+  "angle": 0,
+  "backgroundColor": "transparent",
+  "boundElements": [
+    {
+      "id": "id61",
+      "type": "text",
+    },
+  ],
+  "customData": undefined,
+  "fillStyle": "solid",
+  "frameId": null,
+  "groupIds": [],
+  "height": 100,
+  "id": "id59",
+  "index": "a0",
+  "isDeleted": false,
+  "link": null,
+  "locked": false,
+  "opacity": 100,
+  "roughness": 1,
+  "roundness": {
+    "type": 3,
+  },
+  "strokeColor": "#1e1e1e",
+  "strokeStyle": "solid",
+  "strokeWidth": 2,
+  "type": "rectangle",
+  "updated": 1,
+  "version": 8,
+  "width": 100,
+  "x": 10,
+  "y": 10,
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] element 1 1`] = `
+{
+  "angle": 0,
+  "backgroundColor": "transparent",
+  "boundElements": null,
+  "containerId": "id59",
+  "customData": undefined,
+  "fillStyle": "solid",
+  "fontFamily": 1,
+  "fontSize": 20,
+  "frameId": null,
+  "groupIds": [],
+  "height": 25,
+  "id": "id61",
+  "index": "a0V",
+  "isDeleted": false,
+  "lineHeight": 1.25,
+  "link": null,
+  "locked": false,
+  "opacity": 100,
+  "originalText": "ola",
+  "roughness": 1,
+  "roundness": {
+    "type": 3,
+  },
+  "strokeColor": "#1e1e1e",
+  "strokeStyle": "solid",
+  "strokeWidth": 2,
+  "text": "ola",
+  "textAlign": "left",
+  "type": "text",
+  "updated": 1,
+  "version": 7,
+  "verticalAlign": "top",
+  "width": 30,
+  "x": 15,
+  "y": 15,
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] element 2 1`] = `
+{
+  "angle": 0,
+  "backgroundColor": "transparent",
+  "boundElements": null,
+  "containerId": null,
+  "customData": undefined,
+  "fillStyle": "solid",
+  "fontFamily": 1,
+  "fontSize": 20,
+  "frameId": null,
+  "groupIds": [],
+  "height": 100,
+  "id": "id60",
+  "index": "a1",
+  "isDeleted": false,
+  "lineHeight": 1.25,
+  "link": null,
+  "locked": false,
+  "opacity": 100,
+  "originalText": "que pasa",
+  "roughness": 1,
+  "roundness": {
+    "type": 3,
+  },
+  "strokeColor": "#1e1e1e",
+  "strokeStyle": "solid",
+  "strokeWidth": 2,
+  "text": "que pasa",
+  "textAlign": "left",
+  "type": "text",
+  "updated": 1,
+  "version": 6,
+  "verticalAlign": "top",
+  "width": 100,
+  "x": 15,
+  "y": 15,
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] history 1`] = `
+History {
+  "onHistoryChangedEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
+  "redoStack": [
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {},
+          "inserted": {},
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "removed": Map {},
+        "updated": Map {
+          "id59" => Delta {
+            "deleted": {
+              "boundElements": [],
+            },
+            "inserted": {
+              "boundElements": [
+                {
+                  "id": "id60",
+                  "type": "text",
+                },
+              ],
+            },
+          },
+          "id60" => Delta {
+            "deleted": {
+              "containerId": null,
+            },
+            "inserted": {
+              "containerId": null,
+            },
+          },
+        },
+      },
+    },
+  ],
+  "undoStack": [],
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] number of elements 1`] = `3`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should not override remote binding when restoring bidirectionally binding through the history > [end of test] number of renders 1`] = `9`;
+
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text container when restoring bidirectionally bound text through the history > [end of test] appState 1`] = `
 {
   "activeEmbeddable": null,
@@ -113,7 +386,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id58",
+  "id": "id56",
   "index": "a0",
   "isDeleted": false,
   "link": null,
@@ -141,7 +414,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id59",
+      "id": "id57",
       "type": "text",
     },
   ],
@@ -150,7 +423,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 60,
-  "id": "id60",
+  "id": "id58",
   "index": "a0V",
   "isDeleted": false,
   "link": null,
@@ -177,7 +450,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id60",
+  "containerId": "id58",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -185,7 +458,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 50,
-  "id": "id59",
+  "id": "id57",
   "index": "a1",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -231,42 +504,40 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {
-          "id60" => Delta {
-            "deleted": {
-              "boundElements": [
-                {
-                  "id": "id59",
-                  "type": "text",
-                },
-              ],
-            },
-            "inserted": {
-              "boundElements": [],
-            },
-          },
-        },
         "removed": Map {},
         "updated": Map {
-          "id58" => Delta {
+          "id56" => Delta {
             "deleted": {
               "boundElements": [],
             },
             "inserted": {
               "boundElements": [
                 {
-                  "id": "id59",
+                  "id": "id57",
                   "type": "text",
                 },
               ],
             },
           },
-          "id59" => Delta {
+          "id57" => Delta {
             "deleted": {
-              "containerId": "id60",
+              "containerId": "id58",
             },
             "inserted": {
-              "containerId": "id58",
+              "containerId": "id56",
+            },
+          },
+          "id58" => Delta {
+            "deleted": {
+              "boundElements": [
+                {
+                  "id": "id57",
+                  "type": "text",
+                },
+              ],
+            },
+            "inserted": {
+              "boundElements": [],
             },
           },
         },
@@ -280,294 +551,6 @@ History {
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text container when restoring bidirectionally bound text through the history > [end of test] number of elements 1`] = `3`;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text container when restoring bidirectionally bound text through the history > [end of test] number of renders 1`] = `11`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] appState 1`] = `
-{
-  "activeEmbeddable": null,
-  "activeTool": {
-    "customType": null,
-    "lastActiveTool": null,
-    "locked": false,
-    "type": "selection",
-  },
-  "collaborators": Map {},
-  "contextMenu": null,
-  "currentChartType": "bar",
-  "currentItemBackgroundColor": "transparent",
-  "currentItemEndArrowhead": "arrow",
-  "currentItemFillStyle": "solid",
-  "currentItemFontFamily": 1,
-  "currentItemFontSize": 20,
-  "currentItemOpacity": 100,
-  "currentItemRoughness": 1,
-  "currentItemRoundness": "round",
-  "currentItemStartArrowhead": null,
-  "currentItemStrokeColor": "#1e1e1e",
-  "currentItemStrokeStyle": "solid",
-  "currentItemStrokeWidth": 2,
-  "currentItemTextAlign": "left",
-  "cursorButton": "up",
-  "defaultSidebarDockedPreference": false,
-  "draggingElement": null,
-  "editingElement": null,
-  "editingFrame": null,
-  "editingGroupId": null,
-  "editingLinearElement": null,
-  "elementsToHighlight": null,
-  "errorMessage": null,
-  "exportBackground": true,
-  "exportEmbedScene": false,
-  "exportScale": 1,
-  "exportWithDarkMode": false,
-  "fileHandle": null,
-  "followedBy": Set {},
-  "frameRendering": {
-    "clip": true,
-    "enabled": true,
-    "name": true,
-    "outline": true,
-  },
-  "frameToHighlight": null,
-  "gridSize": null,
-  "height": 0,
-  "isBindingEnabled": true,
-  "isLoading": false,
-  "isResizing": false,
-  "isRotating": false,
-  "lastPointerDownWith": "mouse",
-  "multiElement": null,
-  "objectsSnapModeEnabled": false,
-  "offsetLeft": 0,
-  "offsetTop": 0,
-  "openDialog": null,
-  "openMenu": null,
-  "openPopup": null,
-  "openSidebar": null,
-  "originSnapOffset": {
-    "x": 0,
-    "y": 0,
-  },
-  "pasteDialog": {
-    "data": null,
-    "shown": false,
-  },
-  "penDetected": false,
-  "penMode": false,
-  "pendingImageElementId": null,
-  "previousSelectedElementIds": {},
-  "resizingElement": null,
-  "scrollX": 0,
-  "scrollY": 0,
-  "scrolledOutside": true,
-  "selectedElementIds": {},
-  "selectedElementsAreBeingDragged": false,
-  "selectedGroupIds": {},
-  "selectedLinearElement": null,
-  "selectionElement": null,
-  "shouldCacheIgnoreZoom": false,
-  "showHyperlinkPopup": false,
-  "showStats": false,
-  "showWelcomeScreen": true,
-  "snapLines": [],
-  "startBoundElement": null,
-  "suggestedBindings": [],
-  "theme": "light",
-  "toast": null,
-  "userToFollow": null,
-  "viewBackgroundColor": "#ffffff",
-  "viewModeEnabled": false,
-  "width": 0,
-  "zenModeEnabled": false,
-  "zoom": {
-    "value": 1,
-  },
-}
-`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] element 0 1`] = `
-{
-  "angle": 0,
-  "backgroundColor": "transparent",
-  "boundElements": [
-    {
-      "id": "id63",
-      "type": "text",
-    },
-  ],
-  "customData": undefined,
-  "fillStyle": "solid",
-  "frameId": null,
-  "groupIds": [],
-  "height": 100,
-  "id": "id61",
-  "index": "a0",
-  "isDeleted": false,
-  "link": null,
-  "locked": false,
-  "opacity": 100,
-  "roughness": 1,
-  "roundness": {
-    "type": 3,
-  },
-  "strokeColor": "#1e1e1e",
-  "strokeStyle": "solid",
-  "strokeWidth": 2,
-  "type": "rectangle",
-  "updated": 1,
-  "version": 8,
-  "width": 100,
-  "x": 10,
-  "y": 10,
-}
-`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] element 1 1`] = `
-{
-  "angle": 0,
-  "backgroundColor": "transparent",
-  "boundElements": null,
-  "containerId": "id61",
-  "customData": undefined,
-  "fillStyle": "solid",
-  "fontFamily": 1,
-  "fontSize": 20,
-  "frameId": null,
-  "groupIds": [],
-  "height": 25,
-  "id": "id63",
-  "index": "a0V",
-  "isDeleted": false,
-  "lineHeight": 1.25,
-  "link": null,
-  "locked": false,
-  "opacity": 100,
-  "originalText": "ola",
-  "roughness": 1,
-  "roundness": {
-    "type": 3,
-  },
-  "strokeColor": "#1e1e1e",
-  "strokeStyle": "solid",
-  "strokeWidth": 2,
-  "text": "ola",
-  "textAlign": "left",
-  "type": "text",
-  "updated": 1,
-  "version": 5,
-  "verticalAlign": "top",
-  "width": 30,
-  "x": 15,
-  "y": 15,
-}
-`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] element 2 1`] = `
-{
-  "angle": 0,
-  "backgroundColor": "transparent",
-  "boundElements": null,
-  "containerId": null,
-  "customData": undefined,
-  "fillStyle": "solid",
-  "fontFamily": 1,
-  "fontSize": 20,
-  "frameId": null,
-  "groupIds": [],
-  "height": 25,
-  "id": "id62",
-  "index": "a1",
-  "isDeleted": false,
-  "lineHeight": 1.25,
-  "link": null,
-  "locked": false,
-  "opacity": 100,
-  "originalText": "que pasa",
-  "roughness": 1,
-  "roundness": {
-    "type": 3,
-  },
-  "strokeColor": "#1e1e1e",
-  "strokeStyle": "solid",
-  "strokeWidth": 2,
-  "text": "que pasa",
-  "textAlign": "left",
-  "type": "text",
-  "updated": 1,
-  "version": 7,
-  "verticalAlign": "top",
-  "width": 80,
-  "x": 15,
-  "y": 15,
-}
-`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] history 1`] = `
-History {
-  "onHistoryChangedEmitter": Emitter {
-    "subscribers": [
-      [Function],
-      [Function],
-    ],
-  },
-  "redoStack": [
-    HistoryEntry {
-      "appStateChange": AppStateChange {
-        "delta": Delta {
-          "deleted": {},
-          "inserted": {},
-        },
-      },
-      "elementsChange": ElementsChange {
-        "added": Map {},
-        "affected": Map {
-          "id63" => Delta {
-            "deleted": {
-              "containerId": "id61",
-            },
-            "inserted": {
-              "containerId": null,
-            },
-          },
-        },
-        "removed": Map {},
-        "updated": Map {
-          "id61" => Delta {
-            "deleted": {
-              "boundElements": [
-                {
-                  "id": "id63",
-                  "type": "text",
-                },
-              ],
-            },
-            "inserted": {
-              "boundElements": [
-                {
-                  "id": "id62",
-                  "type": "text",
-                },
-              ],
-            },
-          },
-          "id62" => Delta {
-            "deleted": {
-              "containerId": null,
-            },
-            "inserted": {
-              "containerId": "id61",
-            },
-          },
-        },
-      },
-    },
-  ],
-  "undoStack": [],
-}
-`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] number of elements 1`] = `3`;
-
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should override remotely bound text to container when restoring bidirectionally bound text through the history > [end of test] number of renders 1`] = `9`;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound container through the history > [end of test] appState 1`] = `
 {
@@ -678,7 +661,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id65",
+      "id": "id67",
       "type": "text",
     },
   ],
@@ -687,9 +670,9 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id64",
+  "id": "id66",
   "index": "a0",
-  "isDeleted": false,
+  "isDeleted": true,
   "link": null,
   "locked": false,
   "opacity": 100,
@@ -702,7 +685,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 8,
+  "version": 9,
   "width": 100,
   "x": 10,
   "y": 10,
@@ -722,7 +705,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id66",
+  "id": "id68",
   "index": "a1",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -754,7 +737,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id64",
+  "containerId": null,
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -762,7 +745,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 25,
-  "id": "id65",
+  "id": "id67",
   "index": "a2",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -781,7 +764,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 10,
+  "version": 11,
   "verticalAlign": "top",
   "width": 80,
   "x": 15,
@@ -797,8 +780,7 @@ History {
       [Function],
     ],
   },
-  "redoStack": [],
-  "undoStack": [
+  "redoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
         "delta": Delta {
@@ -807,24 +789,12 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {},
-        "affected": Map {
+        "added": Map {
           "id66" => Delta {
-            "deleted": {},
-            "inserted": {},
-          },
-          "id65" => Delta {
             "deleted": {
-              "containerId": "id64",
+              "isDeleted": true,
             },
             "inserted": {
-              "containerId": null,
-            },
-          },
-        },
-        "removed": Map {
-          "id64" => Delta {
-            "deleted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -850,21 +820,37 @@ History {
               "x": 10,
               "y": 10,
             },
+          },
+        },
+        "removed": Map {},
+        "updated": Map {
+          "id68" => Delta {
+            "deleted": {
+              "containerId": null,
+            },
             "inserted": {
-              "isDeleted": true,
+              "containerId": null,
+            },
+          },
+          "id67" => Delta {
+            "deleted": {
+              "containerId": null,
+            },
+            "inserted": {
+              "containerId": "id66",
             },
           },
         },
-        "updated": Map {},
       },
     },
   ],
+  "undoStack": [],
 }
 `;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound container through the history > [end of test] number of elements 1`] = `3`;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound container through the history > [end of test] number of renders 1`] = `10`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound container through the history > [end of test] number of renders 1`] = `11`;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound text through the history > [end of test] appState 1`] = `
 {
@@ -975,7 +961,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id69",
+      "id": "id71",
       "type": "text",
     },
   ],
@@ -984,7 +970,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id67",
+  "id": "id69",
   "index": "Zz",
   "isDeleted": false,
   "link": null,
@@ -999,7 +985,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 11,
+  "version": 10,
   "width": 100,
   "x": 10,
   "y": 10,
@@ -1019,7 +1005,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id68",
+  "id": "id70",
   "index": "a0",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -1051,7 +1037,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id67",
+  "containerId": "id69",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -1059,7 +1045,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 25,
-  "id": "id69",
+  "id": "id71",
   "index": "a1",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -1105,24 +1091,250 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {
-          "id67" => Delta {
-            "deleted": {},
-            "inserted": {},
-          },
-          "id69" => Delta {
-            "deleted": {},
-            "inserted": {},
-          },
-        },
         "removed": Map {
-          "id68" => Delta {
+          "id70" => Delta {
             "deleted": {
               "containerId": null,
               "isDeleted": false,
             },
             "inserted": {
-              "containerId": "id67",
+              "containerId": "id69",
+              "isDeleted": true,
+            },
+          },
+        },
+        "updated": Map {
+          "id69" => Delta {
+            "deleted": {
+              "boundElements": [
+                {
+                  "id": "id70",
+                  "type": "text",
+                },
+              ],
+            },
+            "inserted": {
+              "boundElements": [],
+            },
+          },
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound text through the history > [end of test] number of elements 1`] = `3`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound text through the history > [end of test] number of renders 1`] = `10`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should rebind remotely deleted bound text from container when restoring the container through the history > [end of test] appState 1`] = `
+{
+  "activeEmbeddable": null,
+  "activeTool": {
+    "customType": null,
+    "lastActiveTool": null,
+    "locked": false,
+    "type": "selection",
+  },
+  "collaborators": Map {},
+  "contextMenu": null,
+  "currentChartType": "bar",
+  "currentItemBackgroundColor": "transparent",
+  "currentItemEndArrowhead": "arrow",
+  "currentItemFillStyle": "solid",
+  "currentItemFontFamily": 1,
+  "currentItemFontSize": 20,
+  "currentItemOpacity": 100,
+  "currentItemRoughness": 1,
+  "currentItemRoundness": "round",
+  "currentItemStartArrowhead": null,
+  "currentItemStrokeColor": "#1e1e1e",
+  "currentItemStrokeStyle": "solid",
+  "currentItemStrokeWidth": 2,
+  "currentItemTextAlign": "left",
+  "cursorButton": "up",
+  "defaultSidebarDockedPreference": false,
+  "draggingElement": null,
+  "editingElement": null,
+  "editingFrame": null,
+  "editingGroupId": null,
+  "editingLinearElement": null,
+  "elementsToHighlight": null,
+  "errorMessage": null,
+  "exportBackground": true,
+  "exportEmbedScene": false,
+  "exportScale": 1,
+  "exportWithDarkMode": false,
+  "fileHandle": null,
+  "followedBy": Set {},
+  "frameRendering": {
+    "clip": true,
+    "enabled": true,
+    "name": true,
+    "outline": true,
+  },
+  "frameToHighlight": null,
+  "gridSize": null,
+  "height": 0,
+  "isBindingEnabled": true,
+  "isLoading": false,
+  "isResizing": false,
+  "isRotating": false,
+  "lastPointerDownWith": "mouse",
+  "multiElement": null,
+  "objectsSnapModeEnabled": false,
+  "offsetLeft": 0,
+  "offsetTop": 0,
+  "openDialog": null,
+  "openMenu": null,
+  "openPopup": null,
+  "openSidebar": null,
+  "originSnapOffset": {
+    "x": 0,
+    "y": 0,
+  },
+  "pasteDialog": {
+    "data": null,
+    "shown": false,
+  },
+  "penDetected": false,
+  "penMode": false,
+  "pendingImageElementId": null,
+  "previousSelectedElementIds": {},
+  "resizingElement": null,
+  "scrollX": 0,
+  "scrollY": 0,
+  "scrolledOutside": true,
+  "selectedElementIds": {},
+  "selectedElementsAreBeingDragged": false,
+  "selectedGroupIds": {},
+  "selectedLinearElement": null,
+  "selectionElement": null,
+  "shouldCacheIgnoreZoom": false,
+  "showHyperlinkPopup": false,
+  "showStats": false,
+  "showWelcomeScreen": true,
+  "snapLines": [],
+  "startBoundElement": null,
+  "suggestedBindings": [],
+  "theme": "light",
+  "toast": null,
+  "userToFollow": null,
+  "viewBackgroundColor": "#ffffff",
+  "viewModeEnabled": false,
+  "width": 0,
+  "zenModeEnabled": false,
+  "zoom": {
+    "value": 1,
+  },
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should rebind remotely deleted bound text from container when restoring the container through the history > [end of test] element 0 1`] = `
+{
+  "angle": 0,
+  "backgroundColor": "transparent",
+  "boundElements": [],
+  "customData": undefined,
+  "fillStyle": "solid",
+  "frameId": null,
+  "groupIds": [],
+  "height": 100,
+  "id": "id72",
+  "index": "a0",
+  "isDeleted": false,
+  "link": null,
+  "locked": false,
+  "opacity": 100,
+  "roughness": 1,
+  "roundness": {
+    "type": 3,
+  },
+  "strokeColor": "#1e1e1e",
+  "strokeStyle": "solid",
+  "strokeWidth": 2,
+  "type": "rectangle",
+  "updated": 1,
+  "version": 6,
+  "width": 100,
+  "x": 10,
+  "y": 10,
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should rebind remotely deleted bound text from container when restoring the container through the history > [end of test] element 1 1`] = `
+{
+  "angle": 0,
+  "backgroundColor": "transparent",
+  "boundElements": null,
+  "containerId": "id72",
+  "customData": undefined,
+  "fillStyle": "solid",
+  "fontFamily": 1,
+  "fontSize": 20,
+  "frameId": null,
+  "groupIds": [],
+  "height": 100,
+  "id": "id73",
+  "index": "a1",
+  "isDeleted": true,
+  "lineHeight": 1.25,
+  "link": null,
+  "locked": false,
+  "opacity": 100,
+  "originalText": "que pasa",
+  "roughness": 1,
+  "roundness": {
+    "type": 3,
+  },
+  "strokeColor": "#1e1e1e",
+  "strokeStyle": "solid",
+  "strokeWidth": 2,
+  "text": "que pasa",
+  "textAlign": "left",
+  "type": "text",
+  "updated": 1,
+  "version": 3,
+  "verticalAlign": "top",
+  "width": 100,
+  "x": 15,
+  "y": 15,
+}
+`;
+
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should rebind remotely deleted bound text from container when restoring the container through the history > [end of test] history 1`] = `
+History {
+  "onHistoryChangedEmitter": Emitter {
+    "subscribers": [
+      [Function],
+      [Function],
+    ],
+  },
+  "redoStack": [],
+  "undoStack": [
+    HistoryEntry {
+      "appStateChange": AppStateChange {
+        "delta": Delta {
+          "deleted": {},
+          "inserted": {},
+        },
+      },
+      "elementsChange": ElementsChange {
+        "added": Map {},
+        "removed": Map {
+          "id72" => Delta {
+            "deleted": {
+              "boundElements": [],
+              "isDeleted": false,
+            },
+            "inserted": {
+              "boundElements": [
+                {
+                  "id": "id73",
+                  "type": "text",
+                },
+              ],
               "isDeleted": true,
             },
           },
@@ -1134,9 +1346,9 @@ History {
 }
 `;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound text through the history > [end of test] number of elements 1`] = `3`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should rebind remotely deleted bound text from container when restoring the container through the history > [end of test] number of elements 1`] = `2`;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should preserve remotely bound text to container when restoring unidirectionally bound text through the history > [end of test] number of renders 1`] = `10`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should rebind remotely deleted bound text from container when restoring the container through the history > [end of test] number of renders 1`] = `7`;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should redraw bound text to match container dimensions when the bound text is updated through the history > [end of test] appState 1`] = `
 {
@@ -1247,7 +1459,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id77",
+      "id": "id79",
       "type": "text",
     },
   ],
@@ -1256,7 +1468,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id76",
+  "id": "id78",
   "index": "Zz",
   "isDeleted": false,
   "link": null,
@@ -1283,7 +1495,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id76",
+  "containerId": "id78",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -1291,7 +1503,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 25,
-  "id": "id77",
+  "id": "id79",
   "index": "a0",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -1336,10 +1548,9 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
-          "id77" => Delta {
+          "id79" => Delta {
             "deleted": {
               "angle": 0,
               "x": 15,
@@ -1472,7 +1683,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id75",
+      "id": "id77",
       "type": "text",
     },
   ],
@@ -1481,7 +1692,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id74",
+  "id": "id76",
   "index": "a0",
   "isDeleted": false,
   "link": null,
@@ -1508,7 +1719,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 90,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id74",
+  "containerId": "id76",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -1516,7 +1727,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 25,
-  "id": "id75",
+  "id": "id77",
   "index": "a1",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -1562,10 +1773,9 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
-          "id74" => Delta {
+          "id76" => Delta {
             "deleted": {
               "angle": 90,
               "x": 200,
@@ -1588,7 +1798,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should redraw remotely added bound text when it's container is updated through the history > [end of test] number of renders 1`] = `10`;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted bound text from container when restoring the container through the history > [end of test] appState 1`] = `
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore binding when there are no conflicts > [end of test] appState 1`] = `
 {
   "activeEmbeddable": null,
   "activeTool": {
@@ -1691,7 +1901,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
 }
 `;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted bound text from container when restoring the container through the history > [end of test] element 0 1`] = `
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore binding when there are no conflicts > [end of test] element 0 1`] = `
 {
   "angle": 0,
   "backgroundColor": "transparent",
@@ -1701,7 +1911,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id70",
+  "id": "id54",
   "index": "a0",
   "isDeleted": false,
   "link": null,
@@ -1716,29 +1926,29 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 8,
+  "version": 9,
   "width": 100,
-  "x": 10,
+  "x": 35,
   "y": 10,
 }
 `;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted bound text from container when restoring the container through the history > [end of test] element 1 1`] = `
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore binding when there are no conflicts > [end of test] element 1 1`] = `
 {
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id70",
+  "containerId": null,
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
   "fontSize": 20,
   "frameId": null,
   "groupIds": [],
-  "height": 100,
-  "id": "id71",
+  "height": 25,
+  "id": "id55",
   "index": "a1",
-  "isDeleted": true,
+  "isDeleted": false,
   "lineHeight": 1.25,
   "link": null,
   "locked": false,
@@ -1755,15 +1965,15 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 3,
+  "version": 10,
   "verticalAlign": "top",
-  "width": 100,
-  "x": 15,
+  "width": 80,
+  "x": 40,
   "y": 15,
 }
 `;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted bound text from container when restoring the container through the history > [end of test] history 1`] = `
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore binding when there are no conflicts > [end of test] history 1`] = `
 History {
   "onHistoryChangedEmitter": Emitter {
     "subscribers": [
@@ -1771,8 +1981,7 @@ History {
       [Function],
     ],
   },
-  "redoStack": [],
-  "undoStack": [
+  "redoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
         "delta": Delta {
@@ -1782,34 +1991,40 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
-        "removed": Map {
-          "id70" => Delta {
+        "removed": Map {},
+        "updated": Map {
+          "id54" => Delta {
             "deleted": {
               "boundElements": [],
-              "isDeleted": false,
             },
             "inserted": {
               "boundElements": [
                 {
-                  "id": "id71",
+                  "id": "id55",
                   "type": "text",
                 },
               ],
-              "isDeleted": true,
+            },
+          },
+          "id55" => Delta {
+            "deleted": {
+              "containerId": null,
+            },
+            "inserted": {
+              "containerId": "id54",
             },
           },
         },
-        "updated": Map {},
       },
     },
   ],
+  "undoStack": [],
 }
 `;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted bound text from container when restoring the container through the history > [end of test] number of elements 1`] = `2`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore binding when there are no conflicts > [end of test] number of elements 1`] = `2`;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted bound text from container when restoring the container through the history > [end of test] number of renders 1`] = `9`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should restore binding when there are no conflicts > [end of test] number of renders 1`] = `11`;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind remotely deleted container from bound text when restoring the bound text through the history > [end of test] appState 1`] = `
 {
@@ -1920,7 +2135,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id73",
+      "id": "id75",
       "type": "text",
     },
   ],
@@ -1929,7 +2144,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id72",
+  "id": "id74",
   "index": "Zz",
   "isDeleted": true,
   "link": null,
@@ -1964,7 +2179,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id73",
+  "id": "id75",
   "index": "a0",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -2010,15 +2225,14 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
-          "id73" => Delta {
+          "id75" => Delta {
             "deleted": {
               "containerId": null,
               "isDeleted": false,
             },
             "inserted": {
-              "containerId": "id72",
+              "containerId": "id74",
               "isDeleted": true,
             },
           },
@@ -2143,7 +2357,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id55",
+      "id": "id63",
       "type": "text",
     },
   ],
@@ -2152,9 +2366,9 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id54",
+  "id": "id62",
   "index": "a0",
-  "isDeleted": true,
+  "isDeleted": false,
   "link": null,
   "locked": false,
   "opacity": 100,
@@ -2167,7 +2381,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 6,
+  "version": 7,
   "width": 100,
   "x": 10,
   "y": 10,
@@ -2179,7 +2393,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": null,
+  "containerId": "id62",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -2187,7 +2401,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 25,
-  "id": "id55",
+  "id": "id63",
   "index": "a1",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -2206,7 +2420,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 9,
+  "version": 12,
   "verticalAlign": "top",
   "width": 80,
   "x": 15,
@@ -2222,7 +2436,8 @@ History {
       [Function],
     ],
   },
-  "redoStack": [
+  "redoStack": [],
+  "undoStack": [
     HistoryEntry {
       "appStateChange": AppStateChange {
         "delta": Delta {
@@ -2231,12 +2446,10 @@ History {
         },
       },
       "elementsChange": ElementsChange {
-        "added": Map {
-          "id54" => Delta {
+        "added": Map {},
+        "removed": Map {
+          "id62" => Delta {
             "deleted": {
-              "isDeleted": true,
-            },
-            "inserted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
@@ -2262,30 +2475,30 @@ History {
               "x": 10,
               "y": 10,
             },
+            "inserted": {
+              "isDeleted": true,
+            },
           },
         },
-        "affected": Map {
-          "id55" => Delta {
+        "updated": Map {
+          "id63" => Delta {
             "deleted": {
-              "containerId": null,
+              "containerId": "id62",
             },
             "inserted": {
-              "containerId": "id54",
+              "containerId": null,
             },
           },
         },
-        "removed": Map {},
-        "updated": Map {},
       },
     },
   ],
-  "undoStack": [],
 }
 `;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added bound text when it's container is removed/added through the history > [end of test] number of elements 1`] = `2`;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added bound text when it's container is removed/added through the history > [end of test] number of renders 1`] = `8`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added bound text when it's container is removed/added through the history > [end of test] number of renders 1`] = `9`;
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added container when it's bound text is removed/added through the history > [end of test] appState 1`] = `
 {
@@ -2396,7 +2609,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "backgroundColor": "transparent",
   "boundElements": [
     {
-      "id": "id57",
+      "id": "id65",
       "type": "text",
     },
   ],
@@ -2405,7 +2618,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 100,
-  "id": "id56",
+  "id": "id64",
   "index": "Zz",
   "isDeleted": false,
   "link": null,
@@ -2420,7 +2633,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "strokeWidth": 2,
   "type": "rectangle",
   "updated": 1,
-  "version": 11,
+  "version": 7,
   "width": 100,
   "x": 10,
   "y": 10,
@@ -2432,7 +2645,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "angle": 0,
   "backgroundColor": "transparent",
   "boundElements": null,
-  "containerId": "id56",
+  "containerId": "id64",
   "customData": undefined,
   "fillStyle": "solid",
   "fontFamily": 1,
@@ -2440,7 +2653,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "frameId": null,
   "groupIds": [],
   "height": 25,
-  "id": "id57",
+  "id": "id65",
   "index": "a0",
   "isDeleted": false,
   "lineHeight": 1.25,
@@ -2459,7 +2672,7 @@ exports[`history > multiplayer undo/redo > conflicts in bound text elements and 
   "textAlign": "left",
   "type": "text",
   "updated": 1,
-  "version": 8,
+  "version": 6,
   "verticalAlign": "top",
   "width": 80,
   "x": 15,
@@ -2486,35 +2699,20 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {
-          "id56" => Delta {
-            "deleted": {
-              "boundElements": [
-                {
-                  "id": "id57",
-                  "type": "text",
-                },
-              ],
-            },
-            "inserted": {
-              "boundElements": [],
-            },
-          },
-        },
         "removed": Map {
-          "id57" => Delta {
+          "id65" => Delta {
             "deleted": {
               "angle": 0,
               "backgroundColor": "transparent",
               "boundElements": null,
-              "containerId": "id56",
+              "containerId": "id64",
               "customData": undefined,
               "fillStyle": "solid",
               "fontFamily": 1,
               "fontSize": 20,
               "frameId": null,
               "groupIds": [],
-              "height": 25,
+              "height": 100,
               "index": "a0",
               "isDeleted": false,
               "lineHeight": 1.25,
@@ -2533,7 +2731,7 @@ History {
               "textAlign": "left",
               "type": "text",
               "verticalAlign": "top",
-              "width": 80,
+              "width": 100,
               "x": 15,
               "y": 15,
             },
@@ -2542,7 +2740,21 @@ History {
             },
           },
         },
-        "updated": Map {},
+        "updated": Map {
+          "id64" => Delta {
+            "deleted": {
+              "boundElements": [
+                {
+                  "id": "id65",
+                  "type": "text",
+                },
+              ],
+            },
+            "inserted": {
+              "boundElements": [],
+            },
+          },
+        },
       },
     },
   ],
@@ -2551,7 +2763,7 @@ History {
 
 exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added container when it's bound text is removed/added through the history > [end of test] number of elements 1`] = `2`;
 
-exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added container when it's bound text is removed/added through the history > [end of test] number of renders 1`] = `9`;
+exports[`history > multiplayer undo/redo > conflicts in bound text elements and containers > should unbind/rebind remotely added container when it's bound text is removed/added through the history > [end of test] number of renders 1`] = `7`;
 
 exports[`history > multiplayer undo/redo > should allow the element author to restore his remotely deleted element > [end of test] appState 1`] = `
 {
@@ -2705,7 +2917,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id27" => Delta {
@@ -2736,7 +2947,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id27" => Delta {
             "deleted": {
@@ -2938,7 +3148,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id28" => Delta {
             "deleted": {
@@ -2999,7 +3208,6 @@ History {
             },
           },
         },
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -3237,7 +3445,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id29" => Delta {
             "deleted": {
@@ -3291,7 +3498,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id30" => Delta {
             "deleted": {
@@ -3337,7 +3543,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id30" => Delta {
@@ -3368,7 +3573,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id31" => Delta {
             "deleted": {
@@ -3414,7 +3618,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id31" => Delta {
@@ -3664,7 +3867,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id33" => Delta {
             "deleted": {
@@ -3780,7 +3982,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -3800,7 +4001,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -4036,7 +4236,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id39" => Delta {
             "deleted": {
@@ -4144,7 +4343,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id40" => Delta {
@@ -4393,7 +4591,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id48" => Delta {
             "deleted": {
@@ -4447,7 +4644,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id49" => Delta {
             "deleted": {
@@ -4501,7 +4697,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -4521,7 +4716,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -4535,7 +4729,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id48" => Delta {
@@ -4779,7 +4972,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id43" => Delta {
             "deleted": {
@@ -5042,7 +5234,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id45" => Delta {
             "deleted": {
@@ -5088,7 +5279,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id45" => Delta {
@@ -5296,7 +5486,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id23" => Delta {
@@ -5327,7 +5516,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id23" => Delta {
             "deleted": {
@@ -5531,7 +5719,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id25" => Delta {
             "deleted": {
@@ -5577,7 +5764,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id25" => Delta {
@@ -5751,7 +5937,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id26" => Delta {
@@ -5774,7 +5959,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id26" => Delta {
@@ -5805,7 +5989,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id26" => Delta {
             "deleted": {
@@ -6041,7 +6224,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id18" => Delta {
             "deleted": {
@@ -6284,7 +6466,6 @@ History {
             },
           },
         },
-        "affected": Map {},
         "removed": Map {
           "B" => Delta {
             "deleted": {
@@ -6519,7 +6700,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id1" => Delta {
             "deleted": {
@@ -6755,7 +6935,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id19" => Delta {
             "deleted": {
@@ -6807,7 +6986,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -6827,7 +7005,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -6849,7 +7026,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id20" => Delta {
             "deleted": {
@@ -7229,7 +7405,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id4" => Delta {
             "deleted": {
@@ -7326,7 +7501,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id4_copy_copy" => Delta {
             "deleted": {
@@ -7629,7 +7803,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id7" => Delta {
             "deleted": {
@@ -7683,7 +7856,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id8" => Delta {
             "deleted": {
@@ -7737,7 +7909,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id9" => Delta {
             "deleted": {
@@ -7791,7 +7962,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -7811,7 +7981,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -7849,7 +8018,6 @@ History {
             },
           },
         },
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -8088,7 +8256,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id12" => Delta {
             "deleted": {
@@ -8142,7 +8309,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id13" => Delta {
             "deleted": {
@@ -8196,7 +8362,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {
           "id14" => Delta {
             "deleted": {
@@ -8242,7 +8407,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id14" => Delta {
@@ -8273,7 +8437,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -8293,7 +8456,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {},
       },
@@ -8307,7 +8469,6 @@ History {
       },
       "elementsChange": ElementsChange {
         "added": Map {},
-        "affected": Map {},
         "removed": Map {},
         "updated": Map {
           "id12" => Delta {

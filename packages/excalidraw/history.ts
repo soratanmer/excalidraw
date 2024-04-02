@@ -41,13 +41,10 @@ export class History {
     elementsChange: ElementsChange,
     appStateChange: AppStateChange,
   ) {
-    const entry = HistoryEntry.create(
-      appStateChange.inverse(),
-      elementsChange.inverse(),
-    );
+    const entry = HistoryEntry.create(appStateChange, elementsChange);
 
     if (!entry.isEmpty()) {
-      this.undoStack.push(entry);
+      this.undoStack.push(entry.inverse());
 
       // don't reset redo stack on local appState changes,
       // as a simple click (unselect) could lead to losing all the redo entries
