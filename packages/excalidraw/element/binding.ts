@@ -856,8 +856,8 @@ const boundElementsVisitor = (
     // create new instance so that possible mutations won't play a role in visiting order
     const boundElements = element.boundElements?.slice() ?? [];
 
-    // go in reverse order due to text duplicates ~ last added is the duplicate
-    boundElements.reverse().forEach(({ id }) => {
+    // last added text should be the one we keep (~previous are duplicates)
+    boundElements.forEach(({ id }) => {
       visit(elements.get(id), "boundElements", id);
     });
   }
@@ -1086,10 +1086,9 @@ export class BindableElement {
         }
 
         if (isTextElement(boundElement)) {
-          // check if this is the first element in the array, if not, it's a duplicated text which should be unbound
-          // checking first found element from the left (boundElements are mutable), as we are removing duplicates from the right
+          // check if this is the last element in the array, if not, it's a duplicated text which should be unbound
           if (
-            bindableElement.boundElements?.find((x) => x.type === "text")
+            bindableElement.boundElements?.findLast((x) => x.type === "text")
               ?.id === boundElement.id
           ) {
             if (boundElement.containerId !== bindableElement.id) {
